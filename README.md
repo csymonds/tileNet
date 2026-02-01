@@ -4,6 +4,8 @@ A multiplayer real-time game framework built with Python, WebSockets, and Pygame
 
 TileNet is a client-server architecture where a WebSocket server hosts game worlds made up of grid-based matrices, and Pygame clients connect to play. The framework supports pluggable game modules -- currently shipping with **PairPanicking**, a multiplayer memory/concentration game.
 
+Note: tileNet is based on a specification written by Prof. David Ackley for the UNM CS program in 2013. Credit for the design of tileNet goes to him. I tasked Claude Opus 4.5 with implementing a Python version to help motivate my daughter to learn Python and have fun by making games for tileNet.
+
 ## Project Structure
 
 ```
