@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 
-# The 16 symbol names, matching the image files in PP Images/
+# The 16 symbol names, matching the image files in images/
 SYMBOLS = [
     "beer", "duck", "fairy", "flowers", "hobbiton", "hydrant",
     "lady", "panda", "robot", "rose", "saturn", "skull",
@@ -107,7 +107,7 @@ class PairPanickingPlugin(GamePlugin):
 
     async def _load_images(self) -> None:
         """Load the 16 symbol JPEGs and create image objects."""
-        images_dir = Path(__file__).resolve().parent.parent.parent / "PP Images"
+        images_dir = Path(__file__).resolve().parent / "images"
 
         for symbol in SYMBOLS:
             img_path = images_dir / f"{symbol}.jpg"
