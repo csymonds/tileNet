@@ -27,6 +27,10 @@ class ObjectCache:
     """Client-side object cache implementing TileNet protocol semantics."""
 
     def __init__(self):
+        self.reset()
+
+    def reset(self) -> None:
+        """Clear all cached state."""
         # objid -> dict of attributes (including _type, _container)
         self.objects: dict[str, dict[str, Any]] = {}
         self.current_matrix_id: str | None = None

@@ -146,8 +146,7 @@ def main():
             except queue.Empty:
                 break
             messages_this_frame += 1
-            _process_message(msg, ui, cache, assets, outgoing,
-                             locals())
+            _process_message(msg, ui, cache, assets, outgoing)
 
         # -- Update --
         gui_manager.update(dt)
@@ -174,8 +173,7 @@ def main():
 
 def _process_message(msg: dict[str, Any], ui: UIManager,
                      cache: ObjectCache, assets: AssetManager,
-                     outgoing: queue.Queue,
-                     local_vars: dict) -> None:
+                     outgoing: queue.Queue) -> None:
     """Process a single message from the server."""
     msg_type = msg.get("type", "")
     log.debug("Processing message: type=%s", msg_type)
@@ -234,7 +232,7 @@ def _process_message(msg: dict[str, Any], ui: UIManager,
         message = msg.get("message", "Disconnected")
         log.info("Logged out: %s", message)
         ui.transition_to_connect(f"Logged out: {message}")
-        cache.__init__()  # reset cache
+        cache.reset()  # reset cache
 
     elif msg_type == "_error":
         error = msg.get("message", "Connection error")
@@ -247,7 +245,7 @@ def _process_message(msg: dict[str, Any], ui: UIManager,
     elif msg_type == "_disconnected":
         message = msg.get("message", "Disconnected")
         ui.transition_to_connect(f"Disconnected: {message}")
-        cache.__init__()
+        cache.reset()
 
 
 if __name__ == "__main__":
