@@ -1,0 +1,375 @@
+                    Overview of the TileNet system
+
+
+               A component of the specification of the
+                  UNM CS351 S'13 Final Group Project
+
+                                    This document version: 1.0
+                                    This document date: Sat Nov  9 18:09:37 2013 
+                                    This document author: David Ackley
+
+                                    TileNet protocol version: 1.0
+                                    Definitive DTD location:
+                                       http://putable.com/TileNet/TileNet1.0.dtd
+
+((i0)) Table of contents
+ (i1)  Introduction
+ (i2)  Basic elements
+ (i3)  Open-ended and vendor-specific aspects
+ (i4)  An integrated use case scenario
+ (i5)  Overall spec documentation map
+ (i6)  <unused reserved>
+ (i7)  <unused reserved>
+ (i8)  <unused reserved>
+ (i9)  Document revision history
+
+-------
+((i1)) The TileNet system
+
+((i1.1)) Introduction
+
+((i1.1.1)) TileNet is an open-ended client-server internet game
+framework.  A full TileNet system consists of principally two programs,
+a network-accessed server that runs a 'TileNet world', and a
+human-interface client that displays views of a TileNet world and
+allows the human user to interact with that world and with other
+humands also within it.
+
+((i1.1.2)) There are a few basic types of elements in a TileNet world,
+but all element types share certain basic properties, such as having a
+server-unique object id ('objid'), having a name (which may or may not
+be unique), having colors, and so forth.
+
+((i1.1.2.1)) Exactly what those properties mean depends partially on
+the particular type of element under consideration, and partially on
+vendor-specific semantics particular to any given TileNet server.
+
+-------
+((i2)) Basic elements
+
+((i2.1)) The five basic elements type in a TileNet world are: Matrix,
+Agent, Key, Token, and Image.
+
+((i2.2)) A Matrix is the basic organizational 'container' in a TileNet
+world.  A Matrix contains a set or list of zero or more Agents, a list
+or zero or more Keys, and a two dimensional grid in which each cell of
+the grid may be empty or may contain one Token.
+
+((i2.2.1)) A TileNet world will typically contain several and may
+contain many different matrices within it, and agents may move from
+one matrix to another if to , but in general events that
+occur in one matrix are the default.
+
+((i2.3)) An Agent is the basic 'active' element of a TileNet world.  A
+human user uses a TileNet client to connects to a TileNet server, and is
+then generally represented by a single Agent within that TileNet world.
+Clients can speak and hear each other if they are in the same Matrix,
+can click on Tokens (and speak to and hear from them as well,
+potentially), and can press Keys to perform whatever command that key
+is programmed to do.
+
+((i2.3.1)) Conversely, each Agent in a TileNet world generally
+corresponds to a one connected client, although such client programs
+may possibly be 'robot' clients that have no actual human in the loop.
+In addition, it is permitted for TileNet servers to have 'wholly owned'
+agents whose behavior is determined by code entirely within the TileNet
+server itself.
+
+((i2.4)) A Key is a representation of a command that can normally be
+invoked from a keyboard when running a TileNet client GUI (although
+TileNet clients may choose to provide other mechanism for virtually
+'pressing' such Keys).
+
+((i2.5)) An Image is a representation of an arbtirary image that can
+be used as an 'icon' for a token or an agent (and possibly a matrix or
+key as well, depending on the TileNet client).  
+
+-------
+((i3)) Open-ended and vendor-specific aspects
+
+((i3.1)) Much about the content and behavior of a TileNet server is
+vendor-specific and is addressed only tangentially or only by way of
+example in this specification.  That vagueness is deliberate: TileNet
+is an _interaction framework_ rather than a fully-specific single
+system, and vendors are encouraged and expected to use the basic
+TileNet elements and protocol in creative and innovative ways.
+
+((i3.2)) That being said, however, to help ensure healthy competition
+within the TileNet economic ecosystem, this specification does very
+specifically constrain the meanings of TileNet protocol messages sent
+between any TileNet client and any TileNet server, even if those
+programs come from different vendors.
+
+((i3.2.1)) See the companion specification document
+'TileNet1.0-Protocol.txt' for much more information on the details of
+the TileNet protocol and the allowed behaviors of TileNet servers and
+clients.  References to that document are tagged with the letter 'c',
+so for example (c0) is the table of contents of that document.
+
+-------
+((i4)) An integrated use case scenario
+
+((i4.1)) This scenario describes some typical patterns of usage for a
+TileNet system, integrating several use cases into a single narrative.
+Note that it may include references to optional elements -- or even to
+elements that are not mentioned anywhere else in the specification!
+The appearance of such elements here DOES NOT IMPLY that they are
+required for the project; the goal of the scenario is to present a
+high-level, easy-to-grasp story embodying the usage of the system,
+_not_ to present strict requirements.
+
+((i4.1)) CASE 1: Running the server
+
+((i4.1.1)) Abby has just put the finishing touches on a new matrix
+in her group's TileNet server.  All the JUnit tests are still happy --
+although that's not terribly surprising or hugely encouraging since
+most of them are quite low-level -- dealing with tag formatting and
+basic matrix details and such -- while the code she's been working in
+is mostly pretty high-level and unfortunately the team hasn't yet
+developed good test coverage of those APIs.
+
+((i4.1.2)) She composes a commit note explaining the new functionality
+and commits her new work to the group's SVN development repository.
+The new matrix, accessed by clicking a newly-added token on the TileNet
+server's home matrix, implements a communal 'sudoku' puzzle, allowing
+people to work together to solve the puzzle.  Abby wants to implement
+real on-the-fly sudoku generation code, so that new puzzles can appear
+in the matrix any time , but that's pretty complicated to do in a
+project where she can't just rip off code from the net, so for now
+she's just put several canned puzzles into a file and added code to
+her SudokuMatrix class to load the puzzles from the file at server
+startup time.  Oops, she realizes she's forgotten actually to include
+that file in the repository, which means her SudokuMatrix will crap
+out if anybody else updates from SVN and tries to run the server!
+Quickly she adds the file and does another commit, with a sheepish
+commit message.  Fortunately it seems nobody else in the group had
+updated their tree in the meantime so it was no real inconvenience.
+
+((i4.1.3)) Abby wants to put up the server and try to get the rest of
+her CODE|DIE development team, and also a few of her select friends,
+in to work a couple puzzles while she watches to see how they do.
+She's been working from home today, and while debugging she just runs
+both server and clients on her own machine, so the server is listening
+on host 'localhost' at port 44455 and her testing clients just connect
+to it there.
+
+((i4.1.4)) (She'd originally expected to use that 'all localhost'
+configuration to debug even when her laptop wasn't on the net at all,
+but discovered that didn't work because the XML parsers couldn't start
+up unless they could hit putable.com to read the TileNet1.0.dtd file.
+She'd been arguing with the rest of the CODE|DIErs that they should
+just copy that DTD and install it locally, but so far the sentiment
+was running against her -- one of the team had claimed to try it and
+had it fail repeatedly, and others were worried about how to locate
+the DTD in a jar file.  She was tempted to just get it working herself
+and check it into the group's SVN repository, but she knew that wasn't
+much of a way to build consensus, and honestly she had plenty of other
+fish to fry.  And having to be on the network usually wasn't that much
+of a hardship anyway.)
+
+((i4.1.5)) A much bigger problem is the fact that her computers at
+home are all behind the 'NATting' router firewall connected to the
+apartment's cable modem, so even if she _did_ start up the server on
+her laptop, and even if that laptop _was_ connected to the net, nobody
+from the internet at large would be able to initiate an inbound
+connection to her server anyway.  She knew she could open a hole in
+her router's firewall, but she didn't at the moment remember quite how
+to do it, and had had troubles trying to do so in the past, and in any
+event she kind of thought that technically she wasn't even supposed to
+be running servers on her cable modem, not that she'd ever exactly
+read the absurd terms of service their ISP had.
+
+((i4.1.6)) So instead, she exports the TileNet project as a JAR file,
+choosing the Eclipse options to include all output folders and setting
+the Server class to be the main program.  She opens up a terminal
+window and 'scp's that JAR file up to the UNM CS machines, and then
+follows it there herself 'slogin abby@deimos.cs.unm.edu'.
+
+((i4.1.7)) Once onto the CS machines, it was only a matter of
+seconds to cd to the right directory and issue the command:
+
+$ java -jar TileNet.jar
+
+to start the server.  Unfortunately, it seems that some other program
+is already listening on port 44455 on deimos, because the server fails
+to start successfully, reporting that it 'Can not bind to port 44455:
+Address already in use'.  Abby checked to see if she'd left any
+of her own server processes running -- it had happened before, what
+with all the Java threading going on in the server:
+
+$ ps wux | grep abby
+
+but she saw no 'java' processes in the resulting output.  It was
+probably another group.  Ah well.  But the CODE|DIE server was
+designed to accept a port number on the command line, so she tried
+again:
+
+$ java -jar TileNet.jar 44456
+
+and this time the server starts up fine.  It prints some startup
+messages, and begins to get itself initialized, fairly quickly binding
+port 44456 successfully, marking itself in state 'closed', then
+proceding to other initializations.  As it initializes, the server
+loads several files, some stored in the JAR file itself, others
+located in the directory Abby placed the JAR file in (and
+subdirectories below that); files ranging from the server
+user/password file, to Abby's new sudoku-puzzles.dat file.  Once all
+the initializations are completed, the server switches itself to state
+'open': It's ready to accept client connections.
+
+((i4.2)) CASE 2: Running the client
+
+((i4.2.1)) Still sitting at her laptop at home, Abby just fires up the
+CODE|DIE TileNet client from inside Eclipse, simply by clicking
+'Relaunch' off the context menu she got by right-clicking on the
+Client line in the Debug window.  The client displays its totally
+ubercool CODE|DIE splash screen for a few seconds, then presents the
+main display, initially set up with labelled text fields for server
+and port number.  Those fields are defaulted to 'localhost' and
+'44455', but Abby changes them to 'deimos.cs.unm.edu' and '44456', and
+then hits 'Enter', which has the same effect as clicking the 'Connect'
+button on the display.
+
+((i4.2.2)) The TileNet server at port 44456 on deimos.cs.unm.edu
+responds quickly, and after a moment, the client display changes to
+show 'user' and 'password' prompts.  These the CODE|DIE client doesn't
+default, so she has to type in 'abby' and her password manually, and
+then again hit Enter because it's more convenient than clicking on the
+'Login' button presented on the display.
+
+((i4.2.3)) Still sitting at her computer, Abby opens up a third
+terminal window.  Using that window (perhaps logged in to somewhere
+else) Abby contacts her group and her friends, via email or IM or SMS
+or talk or telephone or mental telepathy or, possibly if all else
+fails, face-to-face, and says to them "Hey!  Come try my new puzzle in
+the CODE|DIE TileNet world!  Running NOW - deimos.cs.unm.edu/44456!  I
+need testers!"
+
+((i4.2.4)) Jane, at McMurdo Station in Antartica, is browsing the web
+when she receives an email from Abby in New Mexico asking for TileNet
+testers at deimos.cs.unm.edu port 44456.
+
+((i4.2.5)) Jane is able to participate because last week she
+downloaded GroupZ's TileNet3.1.tar.gz file and installed it on her
+Linux box at the Station.  Jane prefers GroupZ's TileNet client to
+CODE|DIE's because GroupZ's client has this really cool way of letting
+you click on the corner of a token to get a popup box allowing you to
+type in a quick 'say' aimed at that token, whereas the CODE|DIE client
+uses, Jane feels, a clunkier interface for talking.
+
+((i4.2.6)) Jane knows that because the communications protocol
+between client and server, TileNet1.0, is standardized, that GroupZ's
+client ought to be able to talk to CODE|DIE's server without a glitch.
+Jane also knows, however, that there is almost always some unfortunate
+'wiggle room' in even the strictest of standards, and she's curious to
+see if it will work.
+
+((i4.2.7)) Even if it does, Jane knows that connecting all the way
+to New Mexico may be tough for her, because her internet connection
+out of Antartica has to bounce all of its data off an Earth-orbiting
+satellite, so there is a long 'round trip' latency between the time
+she clicks on a token and the time she sees the results back on her
+screen.  But she knows that Abby mostly has been working on puzzleish
+sorts of matrices that tend not to be so critically depending of rapid
+reaction times (unlike, say, GroupZ's chaotic 'Whack-A-Politician'
+matrix, where Jane rarely manages to get any whacks in if there are
+people playing in New Mexico at the same time.)
+
+((i4.2.8)) Jane opens up a terminal window on her personal Linux
+box.  Another nice feature of GroupZ's TileNet distribution is that it
+ships with a couple of simple shell scripts that hide the various
+needed java and jar file incantations, and Jane liked it all so much
+that she installed it in her system's /usr/local/bin directory so it's
+easily available.  So to run the GroupZ TileNet client, she just types:
+
+$ cTileNet deimos.cs.unm.edu 44456 "Snow Queen" "1ceb0l"
+
+with the four command line arguments giving the server host name, the
+server port number, and her user name and password.  If she'd left off
+the last two arguments, GroupZ's TileNet client would have used her
+login ID on her local machine, but Jane didn't necessarily feel like
+revealing that out in the TileNet world.
+
+((i4.2.9)) GroupZ's TileNet client briefly displays its splash screen,
+with its cool (if a trifle lengthy) lightning-bolt Z animation,
+listing all the people involved in making it, and providing a URL to
+go to to check for updated versions, then gets down to connecting to
+deimos.cs.unm.edu 44456.
+
+((i4.3)) CASE 3: In the TileNet world
+
+((i4.3.1)) Abby's agent has been sitting in the CODE|DIE TileNet home
+matrix ever since she logged in, so when somebody named "Snow Queen"
+appears in the home matrix; Abby 'hovers' her mouse over the name and
+when the tool tip pops up with a host name from McMurdo that just
+confirms her supposition that the "Snow Queen" is her friend Jane.
+
+((i4.3.2)) Abby and Jane text chat for a while and then Abby suggests
+Jane go try the new puzzle.  Jane obligingly clicks on the home matrix
+button labelled SUDOKU and is suddenly transferred from the home
+matrix to Abby's new sudoku puzzle matrix.
+
+((i4.3.3)) Back in the home matrix, Abby sees Snow Queen disappear and
+'hears' an automatically-generated text message saying that Snow Queen
+has departed for the Sudoku matrix.  It bugs Abby that everything in
+TileNet has to be done as 'speech' -- unlike old text-based MUDs,
+where you could emit 'pose' text like
+
+  Snow Queen left for the Sudoku matrix.
+
+instead of having to 'talk' it like
+
+  Sudoku Button says, "Snow Queen has left for the Sudoku matrix."
+
+but such 'posing' is (yet another) thing that the TileNet protocol just
+doesn't support, so one must just work around as best as possible.
+
+((i4.3.4)) In any event, soon enough Abby too clicks on the Sudoku
+button and changes matrices, leaving the home matrix empty until
+others may show up.
+
+((i4.3.5)) End of use case!  Details of Abby's Sudoku system are
+unavailable!
+
+-------
+((i5)) Documentation map
+
+((i5.1)) The specification for the UNM CS351 F'13 Final Group Project
+is distributed in a number of different files, each cross-referenced
+with a different 'code character'.  The available specification files
+are:
+
+((i5.2)) File: spec-warmup.txt                       Code: 'w'  
+((i5.2.1)) Purpose: An 'first look' preview at the
+           TileNet project.
+
+((i5.3)) File: TileNet-Intro.txt                      Code: 'i'  
+((i5.3.1)) Purpose: Overview, 'i'ntroduction.  
+           (This file.)
+
+((i5.4)) File: spec-dates.txt                        Code: 'd'  
+((i5.4.1)) Purpose: Dates and deliverables.  Note that
+           in this final group project, the groups are
+           responsible for defining their own milestones
+
+((i5.5)) File: TileNet1.0-Protocol.txt                Code: 'c'  
+((i5.5.1)) Purpose: Protocol description, the 
+           'c'ontract details between TileNet clients 
+           and TileNet servers.
+
+
+-------
+((i6)) <unused reserved>
+
+-------
+((i7)) <unused reserved>
+
+-------
+((i8)) <unused reserved>
+
+
+-------
+((i9)) Document history
+
+((i9.1)) Version 1.0, Sat Nov  9 18:10:39 2013 
+

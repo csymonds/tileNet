@@ -1,0 +1,149 @@
+UNM CS 351 Final project required game: PairPanicking
+
+                                       Document version: 1.0
+                                       Released: Sat Nov  9 22:51:50 2013 
+
+PairPanicking is a live-action, multi-player, real-time version of the
+memory game often called 'Concentration', with all game logic
+implemented in a TileNet server, all user interfacing performed by a
+TileNet client, and all game-related communications between client and
+server expressed solely in TileNet protocol without using any xrequest
+or xresponse tags.
+
+---------------
+PairPanicking Rules:
+
+1. There is an 8x8 game board containing 64 squares.  Each square can
+   be one of three states: Either 'hidden', or 'showing' a symbol, or
+   'solved'.
+
+2. There are 16 distinguishable game symbols.  They may be the hex
+   digits 0-f, or letters of the alphabet, or 16 different words or
+   strings or images, at vendor's discretion.  The set of symbols may
+   be fixed forever or regenerated at the beginning of a game, at
+   vendor's discretion.  
+
+3. At the beginning of a game, four copies of each of the 16 symbols
+   are randomly distributed on the 8x8 board, one symbol per square.
+   All squares are set to 'hidden', meaning perhaps that they are
+   blank, or that they all show the same thing, but in any case they
+   show nothing that gives any indication what symbol they contain.
+   The association between a symbol and a square never changes except
+   at the beginning of a game.
+
+4. There may be one or more active players of a game of PairPanicking,
+   and zero or more inactive players.  An active player is one that
+   has at least one point (see rule 7).  If the number of active
+   players falls to zero, the game is over at that moment.  Also, if
+   the number of solved squares reaches 64, the game is over.
+
+   4.1 At any time during a game, any player may 'trigger' any square
+       that is in the 'hidden' state.  Such a triggering causes that
+       square to change to state 'showing' and to reveal its symbol.
+       That same triggering may also cause other squares to change
+       states as well, see rule 5.  Attempts to trigger squares that
+       are showing or solved are ignored.
+
+5. At all times during the play of the game, at most two squares can
+   be in state 'showing'.  Whenever a second hidden square is
+   triggered and changes to state showing, then a 'waiting period'
+   ensues that lasts for the shorter of two seconds or until another
+   hidden square is triggered.  At the end of the waiting period
+   (whether it ends by timeout or by a triggering of a third square),
+   a 'decision' happens as follows:
+
+   5.1 If the two showing squares contain the same symbol, then they
+       both switch to state solved -- meaning they disappear or
+       perhaps show some shared 'solved' display that is different
+       from any of the game symbols, but in any case solved squares
+       must be visually distinguishable, as a group, from either
+       hidden or showing squares.
+ 
+   5.2 If the two showing squares contain different symbols, they both
+       return to state hidden.
+
+6. Winning condition: As soon as there are zero active players or 64
+   solved squares the game is over.  If there are any active players,
+   the active player with the most points is declared the winner,
+   otherwise there is no winner.
+   
+7. Scoring: Vendors must provide a scoring system for their
+   PairPanicking implementation and must choose the details themselves
+   in a way that vendor feels maximizes the enjoyability of the game
+   play.  Here is one sample scoring system:
+
+   7.1 Each player loses one point whenever they enter the game room.
+
+   7.2 The player that starts a new game loses one point.
+
+   7.3 If two showing squares match, all players (whether active or
+       not) receive two points.  In addition, the active player that
+       triggered the second showing square receives an additional four
+       points.
+
+   7.4 If two showing squares mismatch, all active players lose one
+       point each, and the active player that triggered the second
+       showing square loses an additional point.  Inactive players are
+       unaffected.
+
+   7.5 Each point loss is applied whether or not the player incurring
+       the loss is still in the game room or not.  Each point gain is
+       applied only if the player receiving the gain is still in the
+       game room when the reward occurs.
+
+---------------
+TileNet implementation notes:
+
+ - The matrix used for PairPanicking must be larger than 8x8 to
+   accomodate at least the following additional tokens/commands:
+
+   = "Home" - A player that clicks this button is returned to the home
+     matrix of the server, whether that player is currently active or
+     inactive.  
+
+   = "Help" - A player that clicks this button has a brief help
+     message about the PairPanicking game, as implemented by the
+     vendor, 'spoken' to them.  There may be other buttons with
+     additional help at vendor's discretion.  In any case, there must
+     be some way via the interface for the player to receive
+     information about the vendor's chosen scoring system.
+
+   = "Restart" - This button is active only when a PairPanicking game
+     is not already in progress.  Clicking it when active causes a
+     game to be started according to rule 3.
+
+ - The two second timeouts are to be measured with reasonable accuracy
+   at the game server.  What with network latencies, bandwidth
+   limitations, thread contention, and so forth, the actual amount of
+   time a pair of showing squares will remain visible in any
+   particular client in any particular situation may vary.
+
+ - Game points should correspond to increments of player energy
+   according to some vendor-specific scheme.
+
+ - Vendors may provide additional/other mechanisms to obtain
+   energy/game points and may or may not provide mechanisms to break
+   'deadlocks' in which no player has enough energy to be active.
+
+ - In addition to a conforming PairPanicking game, vendors may at
+   their discretion provide other PariPanicking variants in their
+   server as well.  If vendor chooses to do so, those additional
+   variants are not required to conform to these rules -- however, any
+   and all such variants must be clearly marked as being variations,
+   and MUST NOT be offered as the vendor's 'free game'.
+
+ - Client vendors must do their utmost to follow faithfully the server
+   commands regarding game symbols (displayed as token names).  In
+   particular, client vendors must not allow a revealed square's
+   symbol to remain visible once it has been rehidden by the server. 
+
+   = Any vendors of client programs caught displaying information
+     inappropriately may be labelled "LAME BOT CHEATERS" by everybody
+     else.   Any player using such a client program may also be so
+     labelled. 
+
+   = This does not apply if a server vendor's PairPanicking
+     implementation actually leaks information inappropriately (e.g.,
+     storing the square's symbol in a visible token's text even when
+     the square is in state hidden).
+

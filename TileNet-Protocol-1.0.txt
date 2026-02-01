@@ -1,0 +1,2352 @@
+             Contract obligations for clients and servers
+                communicating via the TileNet Protocol
+
+               A component of the specification of the
+                  UNM CS351 F'13 Final Group Project
+
+                                    This document version: 1.0
+                                    This document date: Sat Nov  9 17:11:49 2013 
+                                    This document author: David Ackley
+
+                                    TileNet protocol version: 1.0
+                                    Definitive DTD location:
+                                       http://putable.com/TileNet/TileNet1.0.dtd
+
+((c0)) Table of contents
+ (c1)  Language of contract requirements
+ (c2)  Contract overview
+ (c3)  General provisions
+ (c4)  Specific server provisions
+ (c5)  Specific client provisions
+ (c6)  <reserved>
+ (c7)  <reserved>
+ (c8)  Tag reference
+ (c9)  Document history
+
+------
+((c1)) Language of contract requirements
+
+((c1.1)) The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and OPTIONAL" in
+this document are to be interpreted, with narrow exceptions, as
+described in RFC 2119.
+
+((c1.1.2)) Specifically, and quoting from RFC2119:
+
+((c1.1.2.1)) MUST: This word, or the terms "REQUIRED" or "SHALL", mean
+   that the definition is an absolute requirement of the
+   specification.
+
+((c1.1.2.2)) MUST NOT: This phrase, or the phrase "SHALL NOT", mean that
+   the definition is an absolute prohibition of the specification.
+
+((c1.1.2.3)) SHOULD: This word, or the adjective "RECOMMENDED", mean
+   that there may exist valid reasons in particular circumstances to
+   ignore a particular item, but the full implications must be
+   understood and carefully weighed before choosing a different
+   course.
+
+((c1.1.2.4)) SHOULD NOT: This phrase, or the phrase "NOT RECOMMENDED"
+   mean that there may exist valid reasons in particular circumstances
+   when the particular behavior is acceptable or even useful, but the
+   full implications should be understood and the case carefully
+   weighed before implementing any behavior described with this label.
+
+((c1.1.2.5)) MAY: This word, or the adjective "OPTIONAL", mean that an
+   item is truly optional.  One vendor may choose to include the item
+   because a particular marketplace requires it or because the vendor
+   feels that it enhances the product while another vendor may omit
+   the same item.  An implementation which does not include a
+   particular option MUST be prepared to interoperate with another
+   implementation which does include the option, though perhaps with
+   reduced functionality. In the same vein an implementation which
+   does include a particular option MUST be prepared to interoperate
+   with another implementation which does not include the option
+   (except, of course, for the feature the option provides.)
+
+((c1.1.3)) Narrow exceptions to RFC2119 usage
+
+((c1.1.3.1)) Section 6 of RFC2119 provides that these requirements
+imperatives be used only to ensure interoperability and limit
+potentially harmful behavior, and must not be used to impose any other
+restrictions on implementors.
+
+((c1.1.3.2)) In this document, certain requirements _are_ intended to
+place additional restrictions upon implementors even though such
+restrictions may not be (strictly or obviously or in the least bit)
+necessary for interoperability between a TileNet client and a TileNet
+server.  To flag such exceptional cases, the relevant requirements
+language is always augmented with a capitalized use of the word
+"CREDIT", such as "MUST FOR CREDIT", or "MAY FOR EXTRA CREDIT", or the
+like.
+
+((c1.1.3.3)) Even though such imperatives explicitly mentioning
+"CREDIT" occasionaly appear, vendors must recognize that all the
+_other_ requirements in the document are obviously involved in final
+credit received as well.
+
+((c1.1.3.3.1)) In particular, any TileNet vendor whose client or server
+fails to conform with one or more (c1.1.2.1) and/or (c1.1.2.2)
+imperatives will lose credit as a result -- whether or not credit is
+explicitly mentioned in the imperative.
+
+((c1.1.3.3.2)) In addition, any TileNet vendor whose client or server
+fails to conform with one or more (c1.1.2.3) and/or (c1.1.2.4)
+imperatives will lose credit as well, unless the reasoning for the
+nonconformance is prominently explained in the product documentation
+and that reasoning is judged acceptable -- again, whether or not
+credit is explicitly mentioned in the imperative.
+
+((c1.3)) Additional terms used in this document
+
+((c1.3.1)) 'side': Either a TileNet client or a TileNet server.
+
+((c1.3.2)) 'sender': Either a client or a server, whichever is
+appropriate from context -- or either if it doesn't matter -- that is
+sending a TileNet tag to the other.
+
+((c1.3.3)) 'vendor': A UNM CS351 F'13 Final Project Group, or an
+individual or entity duly-empowered to act on behalf of that group.
+
+  ((c1.3.3.1)) Specifically, the UNM CS351 F'13 Final Project Groups
+               are:
+
+      ((c1.3.3.1.1)) AdderallNighters
+      ((c1.3.3.1.2)) Bearshark
+      ((c1.3.3.1.3)) Class Cast Exceptions
+      ((c1.3.3.1.4)) Fifo
+      ((c1.3.3.1.5)) Functors
+      ((c1.3.3.1.6)) IllegalTeamNameException
+      ((c1.3.3.1.7)) Lyle
+      ((c1.3.3.1.8)) Registered Hex Offenders
+      ((c1.3.3.1.9)) Syntax Errors
+      ((c1.3.3.1.10)) Team$1
+      ((c1.3.3.1.11)) Team Live Bad Ass
+
+((c1.3.4)) 'session': The period of time beginning when a client
+connection is accepted by a server and ending when that connection has
+been closed by both sides.
+
+((c1.3.5)) IN ERROR: This phrase, describing a situation and applied
+to a one side of a TileNet protocol exchange, means that particular
+side MUST NOT allow that situation to arise.  For example, "if a
+client sends a Cmd type Say with no 'fromuid', the client is IN
+ERROR."
+
+((c1.3.6)) 'is illegal': This phrase, applied to a tag received by one
+side of a TileNet protocol exchange, means that the _other_ side of the
+exchange -- the side that sent the tag -- is IN ERROR.  When one side
+determines that the other side is IN ERROR, it should initiate
+appropriate disconnection procedures resulting in closing the
+connection to the offending side.
+
+------
+((c2)) Contract overview
+
+((c2.1)) This document is part of the specification of the UNM CS351
+F'13 Final Group Project.
+
+((c2.1.1)) This document provides requirements and recommendations
+about how two senders can communicate via the TileNet protocol
+correctly.
+
+((c2.1.2)) This document is to be read in conjunction with the TileNet
+Document Type Definition (DTD) cited at the top of this document.
+
+((c2.2)) Purpose
+
+((c2.2.1)) Just as with grammars, API's, and programmatic interfaces,
+the syntactic details of a protocol description rarely provide enough
+information to resolve all questions and ambiguities about correct use
+of the protocol.
+
+((c2.2.1.1)) The principal goal of this document is to provide
+necessary additional information to ensure successful interoperability
+between TileNet clients and servers produced by different vendors, and
+to provide means for establishing which vendor(s) product(s) are IN
+ERROR should an incompatibility arise.
+
+((c2.2.2)) DTD's have only limited expressiveness.  As a reault, there
+are many cases in which a general XML element (such as 'CDATA'
+representing an unparsed quoted string) must be used in a context
+where a more restricted value (such as an integer, for example) is
+actually required -- but DTD's are unable to represent the narrower
+class.
+
+((c2.2.2)) The provisions of this contract MUST be interpreted as
+having the same force as the well-formedness constraints of the DTD
+itself.  Specifically, if a tag is sent that is accepted by the DTD
+but violates a MUST or MUST NOT requirement contained in this
+document, the sender is IN ERROR.
+
+------
+((c3)) General provisions
+
+((c3.1)) DTD requirements
+
+((c3.1.1)) All communications between TileNet clients and servers MUST
+be in validated XML according to the TileNet DTD.
+
+((c3.1.2)) During a single session, a TileNet server MUST send to a
+TileNet client a _single complete_ XML document containing the '?xml'
+and '!DOCTYPE' headers plus a single TileNet 'server' tag (which of
+course includes any tags nested inside it), unless a parsing error or
+I/O exception is detected in the input from the client.
+
+((c3.1.2.1)) If a parsing error is detected, a sender MAY attempt to
+output any tag-closings needed to produce a complete, well-formed
+TileNet document, but it is not required to do so.  (Note that protocol
+version mismatching _is_ a parsing error, given the DTD.)
+
+((c3.1.2.2)) A server MUST NOT attempt to send more than one XML
+document per session under any circumstances.
+
+((c3.1.3)) During a single session, a TileNet client MUST send to a
+TileNet server either zero or one complete XML document.
+
+((c3.1.3.1)) No XML document is sent in the following cases:
+
+  ((c3.1.3.1.1)) If a parsing error occurs before a 'server' tag is
+  successfully parsed from the input from the server.  Such a parsing
+  error could be due to protocol version mismatch, or any other
+  problem causing the server open tag not to validate properly.
+
+  ((c3.1.3.1.2)) If a server tag open is parsed successfully, but the
+  status in the server tag is 'busy', indicating no new clients can
+  currently be accepted.
+
+((c3.1.3.1.3)) In all other cases, barring parsing error or I/O
+exception, precisely one complete XML document is sent from client to
+server.
+
+((c3.1.3.1.3.1)) The single XML document sent from client to server
+MUST contain the '?xml' and '!DOCTYPE' headers plus a single TileNet
+'client' tag (which of course includes any tags nested inside it).  A
+client MUST NOT attempt to send more than one XML document per session
+under any circumstances.
+
+((c3.2)) Network requirements
+
+((c3.2.1)) Sole means of communication
+
+((c3.2.1.1)) TileNet clients and servers MUST communicate solely via
+TCP/IP socket connections carrying TileNet protocol data.
+
+((c3.2.1.2)) Note also that this specification provides no explicit
+means by which clients can find active servers, or active servers can
+advertise their presence.  All such mechanisms are explicitly deemed
+outside the scope of the TileNet specification.
+
+((c3.2.2)) Communication initiative
+
+((c3.2.2.1)) A session between a client and a server does not begin
+until:
+
+((c3.2.2.1.1)) A server has begun listening for new connections, and
+((c3.2.2.1.2)) a client initiates a TCP/IP connection to a listening
+               TileNet server, and
+((c3.2.2.1.3)) the server accepts that new connection and begins
+               processing it.
+
+((c3.2.2.2)) Upon receipt of a new connection, a TileNet server MUST
+begin its TileNet protocol output to that connection, up through
+sending its server tag open.
+
+((c3.2.2.2.1)) The server MUST NOT wait for the initiator of the
+connection to provide input (beyond the 'input' of having initiated
+the connection to begin with).
+
+((c3.2.2.4)) After successfully connecting to a server, a client MAY
+immediately being its TileNet protocol output to that connection, up
+through sending its client tag open, or it MAY refrain from
+transmitting until it has received a valid server open tag.
+
+((c3.2.2.4.1)) However, a client MUST send its own protocol
+initiation, through the client tag open, no later than upon receipt of
+a valide server open tag.
+
+((c3.2.3)) A session between a client and a server ends when the
+connection between client and server has been closed by both sides.
+
+((c3.2.4)) Buffering and flushing
+
+((c3.2.4.1)) For efficiency in performing I/O, senders SHOULD use
+buffer their output to sockets.  Assuming they do so, however, senders
+MUST flush their socket output buffer at least whenever there is a
+reasonable expectation that either socket input is required or an
+open-ended delay may occur before further output is sent to the
+buffer.
+
+((c3.2.4.1.1)) For example, after a server sends its initial server
+open tag, it will perform no further output to that socket until it
+receives a login tag from the client.  In that situation, therefore,
+socket input is required before further socket output may occur, and
+so the server MUST flush its output buffer to that socket.
+
+((c3.2.4.1.2)) As a second example, suppose a client has successfully
+logged in to a server, and at some time later the server outputs a
+'hear' tag to that socket's output buffer.  Once all the bytes
+involved in encoding that tag have been buffered, perhaps nothing else
+will be sent to that socket until the server receives input from some
+connected client (or perhaps until some server-internal timer fires).
+In such a situation, an open-ended delay may occur, and so the server
+MUST flush its buffer.
+
+((c3.2.4.1.3)) As a final example, typically the user of a TileNet
+client is best served by having the client output buffer flushed as
+soon as a complete 'command' (whatever than means in a given context)
+has been buffered.
+
+((c3.2.4.1.4)) For both client and server, safe and reasonable
+flushing behavior MAY be implemented by flushing whenever either a tag
+open or a tag close (where needed) has been buffered.
+
+((c3.2.4.2)) Note finally that any bytes in a sender's output buffer
+remain the responsibility of that sender until the buffer has been
+flushed.  If incorrect or undesirable behavior occurs between a client
+and a server due to unflushed bytes in an output buffer, that
+incorrect or undesirable behavior is the fault of the side containing
+the unflushed bytes.
+
+((c3.2.5)) Character encoding for transport
+
+((c3.2.5.1)) The content of a TCP/IP streams contain a sequence of
+bytes (specifically, 'octets' of 8 bits each), but the TileNet protocol
+is specified in terms of 16 bits Java native characters, so an
+encoding is required to convert from chars and bytes (for writing) and
+bytes to chars (for reading).
+
+((c3.2.5.2)) All TileNet protocol communications MUST be encoded using
+the "UTF8" encoding, no matter what is the default encoding on any
+particular Java platform.
+
+((c3.2.5.3)) Note that for reading this is specified via including
+"encoding='utf-8'" in the '?xml' header.  The encoding for writing
+must be specified separately.
+
+((c3.3)) Legal formats of XML elements
+
+((c3.3.1)) All TileNet XML content must (of course) be well-formed
+XML.  However, there are many additional restrictions on what is
+considered legal 'TileNet protocol' that cannot be expressed simply or
+at all in XML directly.
+
+((c3.3.1.1)) This section provides those additional restrictions,
+insofar as they are common to both client and server.  Additional
+side-specific requirements appear in subsequent sections ((c4) for the
+server, (c5) for the client).
+
+((c3.3.1.2)) There may be cases in these specfication documents where
+requirements are specified that appear to be superfluous, in that a
+strictly validating XML parser should already enforce the requirements
+based on the TileNet DTD.  Such cases may be included for added
+emphasis, for clarification, or because there may occasionally be some
+uncertainty and/or variations in what 'strictly validating XML
+parsers' actually accept.  Their inclusion here does _not_ imply that
+implementors necessarily need to do anything to avoid the problem
+other than use a validating parsers and the appropriate DTD.
+
+((c3.3.2)) Format of tag and attribute names
+
+((c3.3.2.1)) All output tag names and attribute names MUST exactly
+correspond to the DTD, including case-sensitivity.  For example, all
+the following tags are illegal TileNet due to improper spelling and/or
+capitalization (and all have other problems as well, actually):
+
+((c3.3.2.1.1)) <Server>            .. the correct tag name is 'server'
+((c3.3.2.1.2)) <server NAME="hi">  .. the correct attribute name is 'name'
+((c3.3.2.1.3)) <loggedin message="HI"> .. the correct tag name is 'logged-in'
+
+((c3.3.3)) Formats of attribute values
+
+((c3.3.3.1)) Note that XML attribute values have certain restrictions
+on their content, and certain transformations are performed upon
+attribute values independent of any processing outside of the XML
+parser itself.
+
+((c3.3.3.1.1)) Most particularly, the '<' character (byte value 0x3c
+in the UTF-8 encoding) MUST NOT appear in an attribute value under any
+circumstances.
+
+((c3.3.3.2)) Note also that XML attribute values are automatically
+'normalized' by an XML parser in various ways, including the
+substitutions of spaces (byte value 0x20) for newline characters.
+
+((c3.3.3.3)) Transforming between Strings and attribute values
+
+((c3.3.3.3.1)) The TileNet protocol often places data within XML tag
+attribute values for transmission back and forth between client and
+server.  Since XML attribute values have various content restrictions
+some of which are inconvenient for TileNet, the TileNet protocol
+specifies transformations that MUST be applied to String data before
+sending an attribute value and after receiving an attribute value.
+
+((c3.3.3.3.2)) String to attribute value transformation algorithm
+
+((c3.3.3.3.2.1)) The TileNet protocol REQUIRES that any String value to
+transmitted in an attribute value be transformed before output,
+according to the following algorithm, or by using some other method
+such that the resulting attribute value is the same as that produced
+by the algorithm:
+
+  ((c3.3.3.3.2.1.1)) (1) First, all instances of the '&' character
+                     MUST be replaced by instances of the length 5
+                     string "&amp;".
+
+  ((c3.3.3.3.2.1.2)) (2) Then, all instances of '<' and '"' MUST be
+                     replaced by instances of the strings "&lt;" and
+                     "&quot;", respectively.
+
+  ((c3.3.3.3.2.1.3)) (3) Then the result becomes the attribute value.
+
+((c3.3.3.3.3)) Attribute value to String transformation algorithm
+
+((c3.3.3.3.3.1)) Likewise, the TileNet protocol REQUIRES that any
+attribute value produced by an XML parser be transformed before use
+inside a TileNet client or server, according to the following
+algorithm, or by using some other method such that the resulting
+attribute value is the same as that produced by the algorithm:
+
+  ((c3.3.3.3.3.1.1)) (1) First, all instances of the string "&lt;" and
+                     "&quot;" MUST be replaced by instances of the
+                     characters '<' and '"', respectively.
+
+  ((c3.3.3.3.3.1.2)) (2) Then, all instances of the string "&amp;"
+                     MUST be replaced by instances of the character
+                     '&'.
+
+  ((c3.3.3.3.3.1.3)) (3) Then the resulting String becomes the
+                     received value for use within the TileNet client
+                     or server.
+
+((c3.3.3.3.4)) Note that these transformation algorithms do not
+protect any newline characters within the original data, which may
+therefore be altered by the XML attribute value parsing rules, and so
+the entire String->attribute value->String transmission is _not_
+guaranteed to be an identity mapping with respect to Strings
+containing newline characters.
+
+((c3.3.3.3.4.1)) Since the treatment of newlines across differing
+systems is already such a mess anyway, the TileNet protocol chooses to
+exploit rather than defeat the XML parsers 'normalization' processing
+of newlines.  (See http://www.w3.org/TR/REC-xml/#sec-line-ends for
+more details of that processing.)
+
+((c3.3.3.3.5)) Note also that this String<->attribute value
+transformation process is considered 'low-level' with respect to data
+handling with TileNet clients and servers.
+
+((c3.3.3.3.5.1)) Specifically, it is low-level in the sense that any
+other constraints on legal attribute values are considered to apply to
+the original string, not the transformed attribute value.
+
+ ((c3.3.3.3.5.1.1)) For example, if the only constraint on some String
+ is that it be no longer than five characters, then the string "<<&>>"
+ would be perfectly legal, even though the attribute value form of that
+ string: "&lt;&lt;&amp;>>" contains 15 characters.
+
+((c3.3.3.3.5.2)) Vendors are advised to be careful with these
+transformations, in particular being very clean and systematic and (as
+discussed) low-level in their use.  Haphazard use of these
+transformations scattered through code is very likely to yield
+transformations being applied either more than once or not at all.
+
+((c3.3.3.3.5.2.1)) The attribute value to String transformation, for
+example, MUST NOT be performed on a String that is already in
+'internal' format ready for use.  If, for example a user 'says' a
+string like:
+
+   &amp; & &lt; are "ugly"
+
+then the string result appearing on the server must be:
+
+   &amp; & &lt; are "ugly"
+
+((c3.3.3.3.5.2.2)) However, if the string->attribute value
+transformation is mistakenly omitted, the result will be illegal XML
+(due to the '"'s) and a parsing error.
+
+((c3.3.3.3.5.2.3)) If the string->attribute value transformation were
+to be incorrectly applied twice before shipping but correctly only
+undone once upon receipt, the resulting process would look something
+like this:
+
+client internal:   &amp; & &lt; are "ugly"
+client attrval:    &amp;amp; &amp; &amp;lt; are &quot;ugly&quot;
+ bogus attrval2:   &amp;amp;amp; &amp;amp; &amp;amp;lt; are &amp;quot;ugly&amp;quot;
+
+server attrval:    &amp;amp;amp; &amp;amp; &amp;amp;lt; are &amp;quot;ugly&amp;quot;
+server internal:   &amp;amp; &amp; &amp;lt; are &quot;ugly&quot;
+
+((c3.3.3.3.5.2.4)) If, on the other hand, the attribute->string was
+mistaken applied twice on the server, the resulting process would look
+something like this:
+
+client internal:   &amp; & &lt; are "ugly"
+client attrval:    &amp;amp; &amp; &amp;lt; are &quot;ugly&quot;
+server attrval:    &amp;amp; &amp; &amp;lt; are &quot;ugly&quot;
+server internal:   &amp; & &lt; are "ugly"
+ bogus internal2:  & & < are "ugly"
+
+((c3.3.4)) Formats of particular data types
+
+((c3.3.4.1)) Two types of TileNet data -- integers and 'objid's (object
+id's) appear in several places as TileNet protocol attribute values.
+There is also a special attribute value format for color values (see
+(c8.9.6.5) for details), and another special attribute value format
+for image data.
+
+((c3.3.4.2)) Integer format
+
+((c3.3.4.2.1)) When an integer is represented as a string for
+transmission as an attribute value, the following constraints MUST be
+satisfied:
+
+  ((c3.3.4.2.1.1)) The number must be fit in a 32 bit signed integer.
+
+  ((c3.3.4.2.1.2)) The number MUST be represented in decimal,
+
+  ((c3.3.4.2.1.3)) The resulting string MUST contain only the
+                   characters '0' through '9', plus exactly one
+                   leading '-' character iff the number is negative.
+
+  ((c3.3.4.2.1.4)) The string MUST NOT contain any leading '0'
+                   characters (except the integer 0 is represented by
+                   the string "0").
+
+
+((c3.3.4.2.2)) All of the following are legal representations of
+integers usable as attribute values:
+
+ ((c3.3.4.2.2.1)) "0"
+ ((c3.3.4.2.2.2)) "-7"
+ ((c3.3.4.2.2.3)) "3579"
+
+((c3.3.4.2.3)) All of the following are illegal as integer attribute
+values (with explanations):
+
+ ((c3.3.4.2.3.1)) "1,000,000"    (Contains illegal characters - ',')
+ ((c3.3.4.2.3.2)) "3.1415926"    (Contains illegal characters - '.')
+ ((c3.3.4.2.3.3)) "2 "           (Contains illegal characters - ' ')
+ ((c3.3.4.2.3.4)) "+1"           (Contains illegal characters - '+')
+ ((c3.3.4.2.3.5)) "-0"           (The number 0 is represented by "0")
+ ((c3.3.4.2.3.6)) "12345678910"  (The number doesn't fit in an int)
+
+((c3.3.4.3)) Objid format
+
+((c3.3.4.3.1)) Object ID's, 'objid's for short, provide a unique
+identifying name for the key objects within a TileNet system.  An objid
+consists of a single leading character 'type code' immediately
+followed by a positive integer.  Nothing else may appear in an objid.
+Type codes are case sensitive.
+
+((c3.3.4.3.1.1)) Type codes
+
+((c3.3.4.3.1.1.1)) The following objid type codes MUST be supported:
+
+  ((c3.3.4.3.1.1.1.1)) 'm' - This objid refers to a matrix
+  ((c3.3.4.3.1.1.1.2)) 'a' - This objid refers to an agent
+  ((c3.3.4.3.1.1.1.3)) 't' - This objid refers to a token
+  ((c3.3.4.3.1.1.1.4)) 'k' - This objid refers to an action (key)
+  ((c3.3.4.3.1.1.1.5)) 'i' - This objid refers to an image
+
+((c3.3.4.3.2)) All of the following are legal objids:
+
+  ((c3.3.4.3.2.1)) "a3"           (It is an agent)
+  ((c3.3.4.3.2.2)) "t891"         (It is a token)
+  ((c3.3.4.3.2.3)) "k3"           (It is a keybinding)
+
+((c3.3.4.3.3)) All of the following are illegal as objid attribute
+values (with explanations):
+
+  ((c3.3.4.3.3.1)) "A3"           (Unrecognized type code - 'A')
+  ((c3.3.4.3.3.2)) "t0"           (Nonpositive integer - "0")
+  ((c3.3.4.3.3.3)) "m-10"         (Nonpositive integer - "-10")
+  ((c3.3.4.3.3.4)) "k 9"          (Illegal character - ' ')
+  ((c3.3.4.3.3.5)) "t+2"          (Illegal character - '+')
+
+((c3.3.4.4)) Image hexadecimal data format
+
+((c3.3.4.4.1)) Vendors MUST choose to support downloading images
+on-the-fly from server to client, and MUST choose to support displaying
+such downloaded images as token and/or agent icons in the GUI of the
+vendor's client.
+
+((c3.3.4.4.2)) A vendor MUST follow these requirements for
+transmission of the image data.
+
+((c3.3.4.4.3)) Image formats generally require an 'eight bit clean'
+byte stream for transmission, but as we saw above (c3.3.3),
+transmission via XML attribute value is _not_ guaranteed to leave an
+arbitrary sequence of bytes unchanged.
+
+((c3.3.4.4.4)) Consequently, the TileNet protocol specifies that when
+image data (as a byte[]) needs to be transmitted (which can happen in
+only one place, in the 'text' attribute of a 'set' tag when the
+'objid' attribute specifies an image), it must be encoded in as a
+hexadecimal string as follows:
+
+  ((c3.3.4.4.4.1)) The length of the hexadecimal string must be
+                   exactly twice the length of the byte array
+                   containing the image data, with exactly two
+                   characters output per byte of image data.
+
+  ((c3.3.4.4.4.2)) The string must contain only the characters '0'-'9'
+                   and 'a'-'f'.
+
+  ((c3.3.4.4.4.3)) The first two characters of the hexadecimal string
+                   must give the value of the first image data byte,
+                   and so on until the last two characters of the
+                   hexadecimal string give the value of the last image
+                   data byte.
+
+((c3.3.4.4.5)) (Note that these rules imply that if one viewed the
+entire original image data byte[] as one (very) big integer, then
+conversion of that number to and from hexadecimal must preserve any
+leading zeros in the hexadecimal representation.)
+
+((c3.4)) Error handling requirements
+
+<<TO COME>>
+
+
+------
+((c4)) Specific server provisions
+
+((c4.1)) Network behavior
+
+((c4.1.1)) Listening
+
+((c4.1.1.1)) During program startup, once properly initialized, a
+TileNet server SHOULD begin listening for and accepting client
+connections.
+
+((c4.1.1.2)) A TileNet server SHOULD by default listen on the
+(completely un)official TileNet port number 44455.
+
+((c4.1.1.3)) If that port is busy, a TileNet server MAY choose to
+attempt to listen on the alternate ports 44456-44459.
+
+((c4.1.1.4)) A TileNet server MAY provide a means to listen on another
+port specified by the server administrator.
+
+((c4.1.1.5)) A TileNet server SHOULD NOT attempt to listen on any port
+number less than 1024.
+
+((c4.1.1.6)) A TileNet server MAY choose to restrict the maximum number
+of active connections, to enhance the user experience of those
+connected.  If it does so restrict, and clients attempt to connect
+when the server is full, the server MUST still send a complete XML
+document consisting of ?xml and !DOCTYPE headers along with a server
+tag containing status "busy" followed by a server end tag.  The server
+SHOULD then close the connection once that complete XML has been sent.
+
+((c4.1.2)) Serializing changes
+
+((c4.1.2.1)) Although a TileNet server by its very nature supports
+multiple clients making asynchronous changes to shared objects
+(matrices, agents, tokens, and images), it MUST be the case
+that all changes to shared objects in a matrix occur in a single
+well-defined order that is observed identically by all clients
+controlling agents in that matrix.
+
+((c4.1.2.1.1)) For example, suppose matrix m1 contains two agents a12
+and a83 and a tokens t22.  If the user of the client controlling a12
+speaks to token t22 (thus sending a tag something like
+
+  <cmd type="say" objid="t22" text="shazzam"/>
+
+), while at the same time the user of the client controlling a83
+clicks token t22 (thus sending a tag something like
+
+  <cmd type="click" objid="t22"/>
+
+), those two tags may be processed in either other at the TileNet
+server, depending on network latencies and thread scheduling, but it
+MUST be the case that both clients see any _results_ of those actions
+as occurring in the _same_ order.  For example, _both_ clients might
+receive from the server something like:
+
+  <hear from="a83" to="t22" message="xyzzy"/>
+  <hear from="t22" to="a83" message="You are my Master."/>
+  <hear from="t22" to="a12" message="You can't click me."/>
+
+or _both_ clients might receive from the server something like:
+
+  <hear from="t22" to="a83" message="You drained my power!"/>
+  <set objid="a83" energy="134"/>
+  <set objid="t22" energy="0"/>
+  <hear from="t22" to="a12" message="Bzzzz, thanks for playing..."/>
+
+but in any case it MUST be impossible for one client to see a
+different ordering of events than another client when both are sharing
+the same matrix.
+
+((c4.1.2.1.2)) Note that the above discussion does _not_ imply that
+all clients receive the identical tag stream -- far from it.  For one
+thing, clients receive notification only of events that occur in the
+same matrix they are currently in.  They have no way of knowing what
+is going on in other matrices in the same server.  Similarly, if an
+action involves an agent entering or leaving a matrix, that moving
+agent will generally receive a somewhat different sequence of tags
+compared to a non-moving agent in the matrix the mover is entering or
+leaving.  See (c8.9.5.3.1) for a brief example.
+
+((c4.1.3)) Threading and blocking
+
+((c4.1.3.1)) A TileNet server MUST FOR CREDIT be multithreaded and MUST
+dedicate (at least) one thread to each connected client.  It SHOULD be
+impossible for one connected TileNet client, even if it is misbehaving
+and/or malicious, to cause a TileNet server to become indefinitely
+unresponsive to other connected TileNet clients, so long as network
+connectivity remains operational.
+
+((c4.1.3.2)) The threads must cooperate to update the overall TileNet
+state maintained on the server.  The threads MUST be correctly
+synchronized so that the TileNet server state does not become
+corrupted.  The design of the multithreaded component MUST be
+described in design and final performance documentation.  The server
+MUST NOT spawn more threads than are necessary, and it MUST clean up
+threads that have terminated (e.g., because a client has left the
+server), etc.  In particular, there must never be more than O(n)
+threads running for a game with n currently active clients (including
+both clients and server).
+
+((c4.2)) Tag sequencing
+
+((c4.2.1)) Since vendors have wide latitude in what the server
+actually does, both 'spontaneously' (e.g., based on timers and times)
+and in response to client input, this specification cannot give strict
+guidance on precisely what order events will occur within the server
+and thus what order tags will be sent from the server to the client in
+the case of 'non atomic' mutations of the server state.
+
+((c4.2.1.1)) For example, if a client clicking on a token causes that
+token's label to change and also causes the client's agent's energy to
+change, this specification does _not_ constrain which of those two
+resulting will be seen first by the client.
+
+((c4.2.2)) For much more information about tag sequencing constraints,
+the the 'Tag sequencing' sections of the Tag Reference (c8) later in
+this document.
+
+   ((c4.2.2.1)) In particular, for specific information about the most
+   important case that isn't obvious from the DTD -- the sequencing of
+   multiple consecutive set tags -- see (c8.9.5) with particular
+   reference to the "Last Is Current", "Current Is Container", and "X
+   To Exit" principles underlying TileNet 'set' semantics.
+
+((c4.3)) Client-side and and server-side object caching
+
+((c4.3.1)) Clients MUST store every object that they are exposed to
+for as long as a session lasts, retaining the last-set values of all
+those objects and object attributes.  This memory is a client-side
+'object cache' that the server can rely on to reduce network bandwidth
+needs and accelerate protocol interactions, by omitting object
+definitions and attribute values that the server can be certain the
+client already possesses.
+
+((c4.3.2)) For a server to be able to exploit the required existence
+of this client-side cache, however, the server must have a way of
+knowing 'what the client knows', to be able to determine what
+information is already on the client and thus safely omittable.  
+
+((c4.3.2.1)) Furthermore, since multiple clients may connect to the
+same server but proceed in different ways and thus have different
+interaction histories, different clients will be aware of different
+objects and thus the information a server can omit will in general
+vary on a client-by-client basis.
+
+((c4.3.3)) Rock-solid correct-by-spec operation, regardless of
+bandwidth consumption, is the first, absolutely minimal goal for
+vendors.  Elegant object design and beautiful clean code are also
+critical.  Beyond that, reducing network bandwidth effectively will be
+a principal distinguishing 'mark of quality' for vendors that can do
+so effectively, without inducing spec violations even in unusual
+cases.  The creativity, innovativeness, and durable playability of the
+vendor games will also be a factor. 
+
+------
+((c5)) Specific client provisions
+
+((c5.1)) Summary of client side interpretations of 'set' attributes
+
+         name    text    energy    bgcolor fgcolor   x     y     image
+       +--------+--------+--------+-------+-------+------+------+-----+
+ Agent |display |tooltip:|        |       |       | x<0  |      |     |
+       |in agent|remote  |enabling|bgcolor|fgcolor| to   |  ??  |icon |
+       |list    |ipaddr  |        |       |       | exit |      |     |
+       |--------|--------|--------|-------|-------|------|------|-----|
+ Matrix|display |display |        |default|default|reset,|reset,|     |
+       | matrix | title/ |  ??    |new tok|new tok|grid  |grid  |bkgd |
+       | name   | header |        |bgcolor|fgcolor|width |height|image|
+       |--------|--------|--------|-------|-------|------|------|-----|
+ Token |        |        |        |       |       |col in|row in|     |
+       | button |button  |enabling|bgcolor|fgcolor|matrix|matrix| icon|
+       | text   | tooltip|        |       |       |<0exit|      |     |
+       |--------|--------|--------|-------|-------|------|------|-----|
+ Key   | key to |descrip-|        |       |       | x<0  |      |     |
+       |to cause|tion /  |enabling|       |       | to   |      |     |
+       |invoking|tooltip |        |   ??  |   ??  |exit  |  ??  |  ?? |
+       +--------|--------|--------|-------|-------|------|------|-----|
+ Image |  ??    |hexdata |   --   |   ??  |   ??  |pixel |pixel |  ?? |
+       |        |        |(alpha?)|       |       |width |height|     |
+       +--------+--------+--------+-------+-------+------+------+-----+
+ ?? == Server cannot rely on any particular client handling of this datum
+
+((c5.1.1)) See (c8.9) for much more detail on these aspects.
+
+------
+((c6)) <reserved>
+
+------
+((c7)) <reserved>
+
+------
+((c8)) Alphabetical tag reference
+
+======
+((c8.1)) TAG: client
+((c8.1.1)) FROM: Client
+((c8.1.2)) DTD Context: <!ELEMENT client (login+, (cmd | xrequest)*, logout)>
+((c8.1.3)) ATTRIBUTE SUMMARY:
+  Required:
+    version : fixed value String - must be "1.1"
+
+  Optional: --none--
+
+((c8.1.4)) TAG PURPOSE: Announce a client's version to a server.
+
+((c8.1.5)) TAG SEQUENCING: Is the document root tag for the client
+           side of the communication, so obviously the client open
+           must be the first thing sent after the XML and DTD headers,
+           and the client close must be the last thing sent before the
+           client output side of the connection is closed.
+
+           ((c8.1.5.1)) As discussed in (cXXX), in the TileNet protocol
+           the server is required to 'speak first', so the client tag
+           (and the XML and DTD headers before it) are not to be sent
+           until the server open tag has been successfully parsed.
+
+((c8.1.6)) ATTRIBUTE DETAILS
+
+ ((c8.1.6.1)) client.version : fixed value String - must be "1.1"
+
+  ((c8.1.6.1.1)) PURPOSE: Require the client to affirm that it knows
+                 it is speaking the expected version of the TileNet
+                 protocol.
+
+  ((c8.1.6.1.2)) CLIENT: MUST explicitly send the value "1.1" for this
+                 attribute.
+
+  ((c8.1.6.1.3)) SERVER: MUST ensure this value is present and correct
+                 (which is automatically done by parsing it with a
+                 validating XML parser) and treat the input as a
+                 parsing error if it isn't.
+
+((c8.1.7)) NOTES: --none--
+
+======
+((c8.2)) TAG: cmd
+((c8.2.1)) FROM: Client
+((c8.2.2)) DTD CONTEXT: <!ELEMENT client (login+, (cmd | xrequest)*, logout)>
+((c8.2.3)) ATTRIBUTE SUMMARY:
+  Required:
+    type : enumerated String - "click" or "say" or "press"
+    objid : object identifier
+
+  Optional:
+    modifiers : integer
+    text : String
+
+((c8.2.4)) TAG PURPOSE: Request that the server perform a particular
+           command on behalf of the client (and its human user).
+
+((c8.2.5)) TAG SEQUENCING: cmd tags MUST NOT be sent before a client has
+           successfully logged in to a server and MUST NOT be sent
+           after the client sends a logout tag.
+
+           ((c8.2.5.1)) cmd tags may be arbitrarily intermixed with
+           xrequest tags, if the latter are used.
+
+((c8.2.6)) ATTRIBUTE DETAILS
+
+ ((c8.2.6.1)) cmd.type : enumerated String - "click" or "say" or "press"
+
+  ((c8.2.6.1.1)) PURPOSE: Specify what type of action has been
+                 performed by the human user, and thus what action the
+                 client is requesting the server perform.  In
+                 addition, there may be cases in which a tag cmd may
+                 be sent by the client on its own initiative,
+                 independent of any direct action of its human user.
+
+  ((c8.2.6.1.2)) CLIENT: MUST send the appropriate type value given
+                 what the human user does.
+
+                 ((c8.2.6.1.2.1)) If the user clicks on a token, the
+                 client MUST send a type="click" attribute-value pair,
+                 and the cmd.objid must be a 'token' objid.  The
+                 client MAY also send type="click" cmds in response to
+                 other actions by the human user, such as for example
+                 if the human is using assistive technologies or
+                 keyboard invokation of a button, but regardless of
+                 the specific mechanism(s), only token objids should
+                 be 'clicked'.
+
+                 ((c8.2.6.1.2.2)) If the user chooses to 'say' a text
+                 message to some particular objid, the client MUST
+                 send a cmd tag with a type="say" attribute-value
+                 pair.  In this case the tag cmd objid may refer to
+                 any type of object -- matrix, agent, token, or key.
+
+                 ((c8.2.6.1.2.3)) If, in an appropriate context, the
+                 user presses a key that has been bound to a key
+                 object, the client MUST send a cmd type with a
+                 type="press" attribute-value pair.  In this case the
+                 tag cmd objid MUST refer to the particular key object
+                 whose key sequence was pressed.
+
+                 ((c8.2.6.1.2.3.1)) Vendors have some leeway in
+                 defining the meaning of the phrase 'in an appropraite
+                 context' in (c8.2.6.1.2.3).  In particular, depending
+                 on the details of the management 'key bindings', 'key
+                 listeners', and the 'keyboard focus', keyboard events
+                 may or may not be seen by the client code which thus
+                 may or may not trigger a type="press" cmd.
+
+                 ((c8.2.6.1.2.3.2)) At a minimum, clients MUST provide
+                 _some_ way for the human user to specify reliably
+                 whether their matching keystrokes currently should or
+                 should not generate type="press" cmds.  Clients
+                 SHOULD generate type="press" cmds for matching
+                 keyboard presses that occur when the keyboard focus
+                 is somehow associated with the 'main matrix display',
+                 however a client performs that.  Clients MAY provide
+                 means or mechanisms for producing type="press" cmds
+                 for matching keystrokes when the keyboard focus is
+                 elsewhere as well.
+
+  ((c8.2.6.1.3)) SERVER: MUST perform the command requested by a tag
+                 cmd in the order it is parsed (with respect to other
+                 commands from the same or other clients), assuming
+                 the command is _legal_ and _executable_ at the time
+                 it has been parsed.
+
+                 ((c8.2.6.1.3.1)) A _legal_ tag cmd is one that obeys
+                 all the semantic constraints specified in this (c8.2)
+                 section.  For example, a tag cmd requesting to
+                 type="click" an objid of type 'agent' is _not_ legal,
+                 because of (c8.2.6.1.2.1).
+
+                 ((c8.2.6.1.3.2)) Servers MUST treat the receipt of an
+                 tag cmd that is not legal as a fatal error with
+                 respect to the client that sent it, and close the
+                 connection to that client, in the same way they would
+                 respond if any other parsing error had occurred on
+                 input from that client.  Servers MUST NOT ignore or
+                 reinterpret such illegal tag cmds in some way that
+                 would make them purportedly legal.
+
+                 ((c8.2.6.1.3.3)) An _executable_ tag cmd is a legal
+                 tag cmd that can be performed, by the client that
+                 requested it, at the time it is parsed.  Note that no
+                 illegal tag cmd can possibly be executable.  There
+                 are principally two types of reasons why a tag cmd
+                 may not be executable:
+
+                   ((c8.2.6.1.3.3.1)) A tag cmd is NOT executable if
+                   the token its objid references either does not
+                   exist at all or does exist but is NOT currently
+                   located in the same matrix as the agent that is
+                   requesting it.
+
+                   ((c8.2.6.1.3.3.1.1)) This 'locality constraint'
+                   applies regardless of the type of the cmd or the
+                   type of the objid.  However, servers MAY, at the
+                   vendor's discretion, allow agents that possess some
+                   especially high level of energy to violate this
+                   rule and target objids that are outside the agent's
+                   current matrix.
+
+                   ((c8.2.6.1.3.3.2)) A type="click" or type="press"
+                   cmd is NOT executable if the energy level of the
+                   agent that is requesting it is less than or equal
+                   to zero.
+
+                 ((c8.2.6.1.3.4)) Otherwise a tag cmd is executable.
+
+                 ((c8.2.6.1.3.5)) If a tag cmd is legal but not
+                 executable, it is ignored.  Server MUST NOT 'punish'
+                 the client by closing the connection, or in any other
+                 way, for attempting a legal but not executable tag
+                 cmd.
+
+                 ((c8.2.6.1.3.6)) The result of actually executing an
+                 executable tag cmd with a type of "click" or "press"
+                 is in almost all cases largely or completely vendor
+                 specific, and largely determines the particular
+                 'flavors', mechanics, and semantics of any particular
+                 TileNet world.
+
+                 ((c8.2.6.1.3.7)) The result of actually executing an
+                 executable tag cmd with a type of "say", however, is
+                 partially determined by this specification.
+                 Specifically, the execution of a type say tag cmd is
+                 constrained as follows:
+
+                 ((c8.2.6.1.3.7.1)) If the cmd.objid is of type token,
+                 or type key, or of type matrix, then the processing
+                 of the type say tag cmd is vendor specific.  That
+                 processing may or may not lead to hear tags being
+                 sent back to the tag-cmd-generating client and to any
+                 other clients whose agents are in the same matrix.
+
+                 ((c8.2.6.1.3.7.2)) If the cmd.objid is of type agent,
+                 then the server tag execution MUST have the following
+                 effect:
+
+                 ((c8.2.6.1.3.7.2.1)) The text supplied in the
+                 cmd.text attribute is processed as follows: First,
+                 any leading and trailing whitespace is removed, using
+                 the algorithm of String.trim() or equivalent.  If the
+                 resulting string is then empty, the tag say is
+                 ignored.
+
+                 ((c8.2.6.1.3.7.2.2)) Otherwise, a tag hear is
+                 constructed using the following algorithm, or any
+                 other method having the same result:
+                 ((c8.2.6.1.3.7.2.2.1)) The hear.message is set to the
+                 processed text obtained from the type=="say" tag cmd,
+                 ((c8.2.6.1.3.7.2.2.2)) The hear.from is set to the
+                 agent whose client sent the tag cmd, and
+                 ((c8.2.6.1.3.7.2.2.3)) The hear.to is set to the
+                 cmd.objid of the type=="say" tag cmd.
+
+                 ((c8.2.6.1.3.7.2.3)) Then the hear.message string is
+                 examined.  If its first character is a '(', AND its
+                 last character is a ')', then the constructed hear
+                 message MUST be sent sent ONLY to the agent named by
+                 the hear.to.  (This 'parenthetical' form of speech is
+                 called '(whispering)'.)
+
+                 ((c8.2.6.1.3.7.2.4)) Otherwise the constructed hear
+                 message MUST be sent to all agents that are currently
+                 in the same matrix as the hear.to.
+
+                 ((c8.2.6.1.3.8)) Vendors are free to adopt these
+                 speech semantics for type=="say" tag cmds with
+                 cmd.objids of types other than agent, but they are
+                 not required to do so.
+
+ ((c8.2.6.2)) cmd.objid : object identifier
+
+  ((c8.2.6.2.1)) PURPOSE: Specify what object is the 'target' or
+                 'destination' of the requested action.
+
+  ((c8.2.6.2.2)) CLIENT: MUST send a type of objid that is legal given
+                 the cmd.type of action being requested.  See
+                 (c8.2.6.1.2) for details.
+
+  ((c8.2.6.2.3)) SERVER: MUST confirm that the objid reference is of
+                 appropriate type and is accessible before allowing
+                 the tag cmd to be executed.  See (c8.2.6.1.3) for
+                 details.
+
+ ((c8.2.6.3)) cmd.modifiers : integer  [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.2.6.3.1)) PURPOSE: If present in a tag cmd, specifies
+                 additional details that may be used to modify or more
+                 narrowly specify the action to be performed by a tag
+                 cmd.  If omitted by a client, a default value of 0
+                 MUST be assumed by the server.
+
+  ((c8.2.6.3.2)) CLIENT: Whether to send the modifiers attribute, and
+                 the value to send if so, depends on the type of the
+                 tag cmd.
+
+                 ((c8.2.6.3.2.1)) If the cmd.type=="click", the
+                 modifiers attribute SHOULD be supplied, and assuming
+                 it is, its value MUST be that returned by the
+                 java.awt.event.ActionEvent.getModifiers() method.
+
+                 ((c8.2.6.3.2.2)) If the cmd.type=="press", the
+                 modifiers attribute SHOULD be supplied, and assuming
+                 it is, its value MUST be that returned by the
+                 java.awt.event.InputEvent.getModifiersEx() method.
+
+                 ((c8.2.6.3.2.3)) If the cmd.type=="say", the
+                 modifiers attribute generally should not be supplied
+                 although it is not illegal to supply it.
+
+  ((c8.2.6.3.3)) SERVER: The interpretation of the modifiers attribute
+                 depends on the type of the tag cmd, as discussed
+                 above (c8.2.6.2.3).  The server is free to exploit or
+                 ignore the values provided in any modifiers
+                 attributes, as suits the server vendor's purposes.
+
+ ((c8.2.6.4)) cmd.text : String         [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.2.6.4.1)) PURPOSE: If present in a type=="say" tag cmd,
+                 indicates what specifically is being said.  If
+                 omitted by a client, a default value of "" (the
+                 length-0 empty string) MUST be assume by the server.
+
+  ((c8.2.6.4.2)) CLIENT: SHOULD supply a value for cmd.text if the
+                 cmd.type=="say", and if so, the value supplied SHOULD
+                 be whatever the human user wishes to say.
+
+((c8.2.7)) NOTES: --none--
+
+======
+((c8.3)) TAG: hear
+((c8.3.1)) FROM: Server
+((c8.3.2)) DTD CONTEXT: <!ELEMENT server (logged-in+, (set | hear | xresponse)*, logged-out)?>
+((c8.3.3)) ATTRIBUTE SUMMARY:
+  Required:
+    from : object identifier
+    to : object identifier
+    message : String, default value ""
+
+  Optional: --none--
+
+((c8.3.4)) TAG PURPOSE: Allow a server to announce to a client that
+           their agent has just heard something.  Clients will
+           normally then present that information to their human user
+           in some useful fashion.
+
+((c8.3.5)) TAG SEQUENCING: hear tags MUST NOT be sent before a server
+           sends a successful logged-in tag, and MUST NOT be sent
+           after the server has sent a logged-out tag.
+
+           ((c8.3.5.1)) hear tags may be arbitrarily intermixed with
+           set tags, and xresponse tags, if the latter are used.
+
+((c8.3.6)) ATTRIBUTE DETAILS
+
+ ((c8.3.6.1)) hear.from : object identifier
+
+  ((c8.3.6.1.1)) PURPOSE: Identify the origin or speaker responsible
+                 for this hear tag.  Although the most obvious use of
+                 saying and hearing is from agents, the hear.from
+                 objid may refer to any type of TileNet object.
+
+  ((c8.3.6.1.2)) CLIENT: To reduce ambiguities and misunderstandings,
+                 the client SHOULD somehow make the 'from' of a hear
+                 evident to the human user.
+
+                 ((c8.3.6.1.2.1)) Every hear tag received by a client
+                 MUST have a from attribute containing a properly
+                 formatted objid.  If it does not, that should be
+                 treated as a parsing error and be fatal with respect
+                 to the server that sent it.
+
+                 ((c8.3.6.1.2.2)) The server SHOULD attempt to ensure
+                 that the client receiving a hear tag has a definition
+                 for the objid in the hear.from, however, it is LEGAL
+                 for a server to send a message from an objid for
+                 which the client does not have a binding.
+
+  ((c8.3.6.1.3)) SERVER: MUST set the hear.from equal to the cmd.objid
+                 of the type==say tag cmd that gave rise to this hear,
+                 in the normal case of a hear arising from a say.  No
+                 matter what the origin of the hear, however, the
+                 server MUST provide a validly formatted objid for the
+                 hear.from.
+
+                 ((c8.3.6.1.3.1)) In addition, where possible the
+                 server SHOULD ensure that all recipients of a hear
+                 message have a definition for the hear.from objid
+                 before they receive the hear.
+
+ ((c8.3.6.2)) hear.to : object identifier
+
+  ((c8.3.6.2.1)) PURPOSE: Identify the target or destination of this
+                 hear tag.  Note that since a matrix is generally a
+                 'party line', the hear.to objid in a hear tag
+                 received by a client will often be different than the
+                 objid of that client's agent.
+
+  ((c8.3.6.2.2)) CLIENT: To reduce ambiguities and misunderstandings,
+                 the client SHOULD somehow make the 'to' of a hear
+                 evident to the human user, or at the very least,
+                 distinguish somehow between a client hearing
+                 something specifically addressed to its agent vs
+                 hearing some third party chatter.
+
+  ((c8.3.6.2.3)) SERVER: Under normal circumstances, servers SHOULD
+                 treat a single matrix as a 'party line' -- so that
+                 anything heard by one agent in that matrix is heard
+                 by all agents in that matrix.  In such cases, the
+                 specific hear.to is partially just informative,
+                 because others will hear it as well, but it is also
+                 partially functional, because it is the matrix of the
+                 hear.to that determines the particular 'party line'
+                 involved.
+
+                 ((c8.3.6.2.3.1)) In addition, however, exceptions to
+                 that general pattern can occur.  'Whispering'
+                 (c8.2.6.1.3.7.2.3), for example, leads to a hear tag
+                 being sent to just one client within a matrix.  As
+                 another potential exception, (c8.2.6.1.3.3.1)
+                 indicates it is possible that the 'from' of a hear
+                 may not be in the same matrix as the client's agent.
+
+ ((c8.3.6.3)) hear.message : String, default value ""
+
+  ((c8.3.6.3.1)) PURPOSE: Convey the specific content that is being
+                 said.
+
+  ((c8.3.6.3.2)) CLIENT: The client SHOULD make the content of the
+                 hear.message available to the human user.  This may
+                 be in a more persistent or more temporary fashion, or
+                 some combination, as the client designers choose.
+
+  ((c8.3.6.3.3)) SERVER: MUST set the hear.message equal to the
+                 processed result (c8.2.6.1.3.7.2.1) derived from the
+                 cmd.text of the type==say tag cmd that gave rise to
+                 this hear, in the normal case of a hear arising from
+                 a say.
+
+((c8.3.7)) Notes: -- none --
+
+======
+((c8.4)) TAG: logged-in
+((c8.4.1)) FROM: Server
+((c8.4.2)) DTD CONTEXT: <!ELEMENT server (logged-in+, (set | hear | xresponse)*, logged-out)?>
+((c8.4.3)) ATTRIBUTE SUMMARY:
+  Required:
+    message : String, default value ""
+
+  Optional:
+    objid : agent object identifier
+
+((c8.4.4)) TAG PURPOSE: Allow a server to let a client whether the
+           client's login attempt succeeded or failed.  In addition,
+           if the login attempt succeeded, inform the client of the
+           identity of the agent associated with the client.
+
+((c8.4.5)) TAG SEQUENCING: A logged-in tag MUST be the first tag sent
+           after a server open tag, sent upon receipt of a login tag
+           from the client.  Multiple logged-in tags may be sent in a
+           single session but only when all but the last one specific
+           failure to login.
+
+((c8.4.6)) ATTRIBUTE DETAILS
+
+ ((c8.4.6.1)) logged-in.message : String
+
+  ((c8.4.6.1.1)) PURPOSE: A message to the client, normally relating
+                 to the process of logging in.
+
+  ((c8.4.6.1.2)) CLIENT: If the message is non-empty, the client
+                 SHOULD display the message to the user in some
+                 fashion, particularly if the login attempt failed.
+
+  ((c8.4.6.1.3)) SERVER: If the most-recent login attempt by this
+                 client failed, the server SHOULD provide a
+                 logged-in.message that provides some clue as to what
+                 the problem was.  If the login attempt succeeds, the
+                 server may or may not provide a non-empty message may
+                 or may, as desired.
+
+ ((c8.4.6.2)) objid : agent object identifier   [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.4.6.2.1)) PURPOSE: If omitted by the server, that indicates to the
+                 client that the login attempt failed.  If included by
+                 the server, that indicates to the client that the
+                 login attempt succeeded and provides the objid
+                 of the agent now associated with this client.
+
+  ((c8.4.6.2.2)) CLIENT: If the objid attribute is not included in the
+                 logged-in tag, the client SHOULD somehow report the
+                 login failure to the human user and may permit the
+                 user perhaps to adjust parameters (e.g., user or
+                 password, possible host or port) and try again.
+
+                 ((c8.4.6.2.2.1)) After the client opening tag, the
+                 client MUST NOT send any other tags to the server,
+                 except for login tags, until a logged-in tag
+                 including an objid is received.
+
+                 ((c8.4.6.2.2.2)) When a successful logged-in tag is
+                 received, the client should (almost surely need to)
+                 make note of the objid returned, and then the client
+                 may switch to 'playing mode', if it possesses such a
+                 notion, meaning that general tag cmds (and possibly
+                 tag xrequests) may now be sent.
+
+  ((c8.4.6.2.3)) SERVER: May use any vendor-specific means to
+                 determine whether to accept or reject any presented
+                 login attempt.
+
+                 ((c8.4.6.2.3.1)) However, if the login attempt is
+                 rejected, the server MUST NOT include an objid
+                 attribute in the logged-in tag sent as a response.
+                 (Including the attribute with an empty attribute
+                 value is _not at all_ equivalent to omitting the
+                 attribute entirely, and would constitute an illegal
+                 tag transmission on the server's part.)
+
+                 ((c8.4.6.2.3.2)) On the other hand, if the login
+                 attempt is accepted the server MUST include the objid
+                 of a newly-created agent object that is dedicated to
+                 represent this client within the server's TileNet
+                 world for the duration of this session.  The
+                 newly-created agent object has the following
+                 properties:
+
+                 ((c8.4.6.2.3.2.1)) It is a newly-created agent
+                 object, meaning that its objid MUST not ever have
+                 been transmitted to any client in the history of this
+                 run of the server before the successful login is
+                 processed.
+
+                 ((c8.4.6.2.3.2.2)) The agent.name of the
+                 newly-created agent object MUST be equal to the
+                 login.user attribute of the accepted login tag.
+
+                 ((c8.4.6.2.3.2.3)) The agent.text of the
+                 newly-created agent object SHOULD be set to a string
+                 containing at least the IP address of the client that
+                 sent the accepted login tag.  (The agent.text MAY
+                 contain other information as well, but if so the IP
+                 address should be obvious within it.)
+
+                 ((c8.4.6.2.3.3)) Furthermore, upon acceptance of a
+                 login tag, the server MUST take other actions to
+                 initialize its internal state for a new logged-in
+                 client.  Most of the details of such actions are
+                 vendor specific, but are likely to include steps such
+                 as initializing a new empty 'object cache' for the
+                 client connection to represent the fact that so far
+                 no objects have been sent to the client.
+
+                 ((c8.4.6.2.3.3.1)) In addition to those
+                 vendor-specific steps, the server MUST place the
+                 newly-created agent into an 'initial matrix' within
+                 the TileNet world.  The specific matrix chosen is
+                 vendor-specific; one recommendation is that new
+                 agents be placed in some designated 'home matrix'.
+
+                 ((c8.4.6.2.3.3.2)) (A possible alternative, at least
+                 for accepted logins with users that have logged in
+                 before, is to place them in whatever matrix they were
+                 last in during their most recent previous session; or
+                 to some intermediate 'game save' position along the
+                 way.)
+
+                 ((c8.4.6.2.3.3.3)) The process of sending a
+                 newly-created agent to its designated initial matrix
+                 should insofar as possible be equivalent to the
+                 process of moving an existing agent from one matrix
+                 to another.
+
+                 ((c8.4.6.2.3.3.3.1)) In particular, (at least) the
+                 other agents in the new agent object's initial matrix
+                 MUST receive set tags informing them of the new
+                 agent's existence and presence within their matrix.
+
+                 ((c8.4.6.2.3.3.3.2)) Also, conversely, the client of
+                 the newly created agent object, AFTER receiving the
+                 successful logged-in tag, MUST next receive a set tag
+                 providing the definition of the matrix it is in.
+                 Following that, the client MUST receive set tags
+                 containing the definitions of all tokens within the
+                 matrix grid, of all key actions associated with the
+                 matrix, of all images used by any objects within the
+                 matrix (if images are supported by the server), and
+                 of all agents in the matrix, including the newly
+                 created agent object itself.
+
+((c8.4.7)) Notes: -- none --
+
+======
+((c8.5)) TAG: logged-out
+((c8.5.1)) FROM: Server
+((c8.5.2)) DTD CONTEXT: <!ELEMENT server (logged-in+, (set | hear | xresponse)*, logged-out)?>
+((c8.5.3)) ATTRIBUTE SUMMARY:
+  Required:
+    message : String, default value ""
+
+  Optional: --none--
+
+((c8.5.4)) TAG PURPOSE: Allow a server to inform a client that they
+           are now logged out of the server TileNet world.
+
+((c8.5.5)) TAG SEQUENCING: A logged-out tag MUST be the last tag sent
+           before the server close tag is sent and the server output
+           connection is close.  Under normal circumstances, a
+           logged-out tag will be sent in response to a logout tag
+           received from the client, however, a logged-out tag MAY
+           also be sent WITHOUT a logout tag having been received,
+           when the agent associated with that particular client
+           'dies' within the TileNet world for any reason.
+
+
+((c8.5.6)) ATTRIBUTE DETAILS
+
+ ((c8.5.6.1)) logged-out.message : String, default value ""
+
+  ((c8.5.6.1.1)) PURPOSE: Provide a message to the client, normally
+                 relating to the reason for the logging-out occurring.
+
+  ((c8.5.6.1.2)) CLIENT: The client SHOULD display this message to the
+                 human user, if it is non-empty.  In addition, if the
+                 client had not already sent a logout tag, it SHOULD
+                 now attempt to do so.  It SHOULD then close the
+                 client tag and then close its output connection.
+
+  ((c8.5.6.1.3)) SERVER: Whenever possible, the server SHOULD provide
+                 a reasonably helpful and information message
+                 explaining the reason for the logged-out tag, in
+                 particular if the reason is something other than the
+                 receipt of a logout tag from that client.
+
+((c8.5.7)) Notes: -- none --
+
+
+======
+((c8.6)) TAG: login
+((c8.6.1)) FROM: Client
+((c8.6.2)) DTD CONTEXT: <!ELEMENT client (login+, (cmd | xrequest)*, logout)>
+((c8.6.3)) ATTRIBUTE SUMMARY:
+  Required:
+    user : String with restricted char set - no '<' allowed
+    password : String
+
+  Optional: --none--
+
+((c8.6.4)) TAG PURPOSE: Authenticate a client to a server and
+           associate a particular user name and connection information
+           with a particular agent instance in the world.
+
+((c8.6.5)) TAG SEQUENCING: Is sent at least once after the client tag
+           is opened.  After sending, client MUST wait for a logged-in
+           tag from server before sending anything more.  If the
+           returned logged-in tag indicates success, client MUST send
+           no further login tags during that session.  If the returned
+           logged-in tag indicates failure, client MAY choose to
+           modify the user and/or password information (presumably in
+           consultation with the client's user) and send another login
+           tag.
+
+((c8.6.6)) ATTRIBUTE DETAILS
+
+ ((c8.6.6.1)) login.user : String with restricted character set - no
+              '<' allowed
+
+  ((c8.6.6.1.1)) PURPOSE: Request a particular user name be associated
+                 with an agent created for this client.
+
+  ((c8.6.6.1.2)) CLIENT: SHOULD enforce length limit and restrict to
+                 single line of text, and MUST enforce the 'no <
+                 allowed' character set restriction.
+
+  ((c8.6.6.1.3)) SERVER: MUST enforce a 'no < allowed' restriction by
+                 rejecting logging attempts containing user names with
+                 '<'s, and MAY impose additional restrictions (e.g.,
+                 length/charset restrictions).  If a server does
+                 reject a user name due to such additional
+                 restrictions, it SHOULD provide an explanatory
+                 message in the logged-in.objid=="" failure message.
+                 Server MUST NOT change the supplied user name in any
+                 way to make it acceptable; if a user name is
+                 unacceptable as supplied, the server MUST fail to log
+                 that client in.
+
+ ((c8.6.6.2)) login.password : String
+
+  ((c8.6.6.2.1)) PURPOSE: Help ensure a client has a right to use a
+                 particular a particular user name be associated with
+                 an agent.
+
+  ((c8.6.6.2.2)) CLIENT: SHOULD ensure that the password is not
+                 visible on the screen while being typed.  MAY enforce
+                 length or character set restrictions if desired.
+
+  ((c8.6.6.2.3)) SERVER: MAY choose not to enforce password checking,
+                 in which case this value may be ignored.  Otherwise,
+                 MUST ensure that the supplied password is a
+                 String.equals match for the stored password
+                 information associated with the given login.user.
+
+((c8.6.7)) NOTES: This specification provides no constraints upon the
+           means by which a set of user-password associations would
+           come to exist and be maintained by a server; vendors are
+           free to implement any mechanism(s) of their own choosing.
+
+
+
+======
+((c8.7)) TAG: logout
+((c8.7.1)) FROM: Client
+((c8.7.2)) DTD CONTEXT: <!ELEMENT client (login+, (cmd | xrequest)*, logout)>
+((c8.7.3)) ATTRIBUTE SUMMARY:
+  Required: --none--
+
+  Optional:
+    message : String
+
+((c8.7.4)) TAG PURPOSE: Inform the server the client wishes to/is
+           about to end this protocol session, optionally providing
+           some message.
+
+((c8.7.5)) TAG SEQUENCING: If possible, MUST be sent once before the
+           client tag is closed.  After sending, under normal
+           circumstances the client SHOULD wait for a logged-out tag
+           from server before sending the client close tag and closing
+           its connections.  In the case of IO exceptions or premature
+           EOF's, sending the logout tag or receiving a logged-out
+           tag may not be possible, but both client and server SHOULD
+           make best efforts to complete their root tag cleanly
+           whenever possible.
+
+((c8.7.6)) ATTRIBUTE DETAILS
+
+ ((c8.7.6.1)) logout.message : String           [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.7.6.1.1)) PURPOSE: Provide a message with a logout request.
+
+  ((c8.7.6.1.2)) CLIENT: May include a message of some sort, or not.
+                 If the logout is produced during an 'emergency
+                 shutdown' associated with the occurrence of some sort
+                 of error, client vendors are encouraged to provide an
+                 informative (at least to developers) message of some
+                 sort to possibly aid in debugging interoperability
+                 problems occurring between client and server.
+
+  ((c8.7.6.1.3)) SERVER: Takes vendor specific actions using the
+                 logout.message.  May choose to generate a 'say' to
+                 the matrix of the logging-out agent containing the
+                 logout.message, or may append the message to a log
+                 file, etc.
+
+((c8.7.7)) NOTES: --none--
+
+
+
+======
+((c8.8)) TAG: server
+((c8.8.1)) FROM: Server
+((c8.8.2)) DTD CONTEXT: <!ELEMENT server (logged-in+, (set | hear | xresponse)*, logged-out)?>
+((c8.8.3)) ATTRIBUTE SUMMARY:
+  Required:
+    version : fixed value String - must be "1.1"
+    group : String
+    name : String
+    status : "open" or "closed" or "busy"
+
+  Optional: --none--
+
+((c8.8.4)) TAG PURPOSE: Announce a server's identifying information
+           and status to a (potential) client.
+
+((c8.8.5)) TAG SEQUENCING: Is the document root tag for the server
+           side of the communication, so obviously the server tag open
+           must be the first thing sent after the XML and DTD headers,
+           and the server tag close must be the last thing sent before
+           the server output side of the connection is closed.
+
+((c8.8.6)) ATTRIBUTE DETAILS
+
+ ((c8.8.6.1)) server.version : fixed value String - must be "1.1"
+
+  ((c8.8.6.1.1)) PURPOSE: Require the server to affirm that it knows
+                 it is speaking the expected version of the TileNet
+                 protocol.
+
+  ((c8.8.6.1.2)) CLIENT: MUST ensure this value is present and correct
+                 (which is automatically done by parsing it with a
+                 validating XML parser) and treat the input as a
+                 parsing error if it isn't.
+
+  ((c8.8.6.1.3)) SERVER: MUST explicitly send the value "1.1" for this
+                 attribute.
+
+ ((c8.8.6.2)) server.group : String
+
+  ((c8.8.6.2.1)) PURPOSE: Identify the vendor group that produced this
+                 TileNet server software and its associated Matrices,
+                 etc.
+
+  ((c8.8.6.2.2)) CLIENT: SHOULD in some way display the group
+                 information to the human user, preferably before the
+                 user has to commit to a particular user name and/or
+                 password.  In particular, a client SHOULD NOT
+                 automatically send a user/password combination to a
+                 server without having some reasonable assurance that
+                 the server being spoken to at least claims to be
+                 offered by the group the user is expecting.  (If a
+                 client wanted to provide an 'express login' feature,
+                 for example, this guidance could be implemented by
+                 storing a map of user-supplied
+                 groupname->user/password associations.)
+
+  ((c8.8.6.2.3)) SERVER: MUST supply a unambiguous string that
+                 accurately represents the vendor group that produced
+                 the server.  MUST not attempt to 'spoof' other
+                 vendor's names.  SHOULD NOT even provide any external
+                 way of changing the group supplied.
+
+ ((c8.8.6.3)) server.name : String
+
+  ((c8.8.6.3.1)) PURPOSE: Identify the particular server 'world' (or
+                 'database' if such a concept exists in a given server
+                 implementation).
+
+  ((c8.8.6.3.2)) CLIENT: SHOULD in some way display the world name to
+                 the human user, preferably before the user has to
+                 commit to a particular user name and/or password.
+                 May or may not choose to keep the world name
+                 displayed after user login has succeeded.  The client
+                 side discussion of attribute server.group also
+                 applies here.  SHOULD display the name in a Java
+                 component (such as a JLabel) that is 'HTML aware'.
+                 SHOULD provide some (unspecified but) 'reasonable'
+                 amount of room for the group name to be displayed,
+                 but is not obligated to display it all.
+
+  ((c8.8.6.3.3)) SERVER: SHOULD supply a non-empty server name.  MAY
+                 choose to use the 'HTML encoding' feature triggered
+                 by starting with the string '<html>'.  MAY allow an
+                 external 'server admin' user to set the world name
+                 via some mechanism.
+
+ ((c8.8.6.4)) server.status : enumerated String - "open" or "closed" or "busy"
+
+  ((c8.8.6.4.1)) PURPOSE: Report the current status of the server to a
+                 potential client.
+
+  ((c8.8.6.4.2)) CLIENT: SHOULD somehow present the returned status to
+                 the human user.  SHOULD NOT attempt to login to the
+                 server unless the status is "open".  If the status is
+                 "busy" or "closed", the client MAY close the
+                 connection and attempt to reconnect, but SHOULD
+                 ensure that successive reconnection attempts occur no
+                 more frequently than once every five seconds.
+
+  ((c8.8.6.4.3)) SERVER: MUST report their current status accurately.
+
+                 ((c8.8.6.4.3.1)) Status "open" is reported if the
+                 server is ready for new clients and currently has no
+                 more than its maximum number of connections open.
+
+                 ((c8.8.6.4.3.2)) Status "closed" is reported if the
+                 server is still initializing and is not yet ready to
+                 accept client logins, and MAY also be reported if the
+                 server supports some kind of "administrative mode" or
+                 other special operating condition in which it is
+                 active but currently unwilling to accept client
+                 logins.
+
+                 ((c8.8.6.4.3.3)) Status "busy" is reported if the
+                 server would be ready for new clients except that it
+                 already has more than its maximum number of
+                 connections open.  Note in both of those cases the
+                 relevant count is in terms of _open connections_, not
+                 in terms of _logged in clients_.  For example, a
+                 server could have 50 as a maximum number of
+                 connections, and have zero clients currently
+                 logged-in, and still report status "busy", if in fact
+                 there were already 51 potential clients with already
+                 having open connections.  To help mitigate the
+                 possibility of DoSing ('denial of service'ing) a
+                 server by creating many connections to it without
+                 actually logging any of them in, a server MAY choose
+                 to enforce a maximum time and/or login attempt limit,
+                 between the time the server open tag is sent and the
+                 time the client is successfully logged in.
+
+((c8.8.7)) NOTES: --none--
+
+======
+((c8.9)) TAG: set
+((c8.9.1)) FROM: Server
+((c8.9.2)) DTD CONTEXT: <!ELEMENT server (logged-in+, (set | hear | xresponse)*, logged-out)?>
+((c8.9.3)) ATTRIBUTE SUMMARY:
+  Required:
+    objid : object identifier
+
+  Optional:
+    energy : integer
+    name : String
+    text : String
+    bgcolor : hexadecimal 32-bit RGBA value
+    fgcolor : hexadecimal 32-bit RGBA value
+    x : integer
+    y : integer
+    image : object identifier or ""
+
+
+((c8.9.4)) TAG PURPOSE: Used to notify a client that one or more
+           aspects of a single TileNet object now have particular
+           values.  In addition, used to notify a client that
+           mentioned agents, keys, and tokens is now located in a
+           particular matrix.
+
+           ((c8.9.4.1)) The set tag is the workhorse of the TileNet
+           protocol, with many optional attributes that have specific
+           and varied meanings when applied to the different types of
+           TileNet objects.  Table (c5.1) summarizes many of those
+           meanings, while the rest of this (c8.9) section provides
+           the gory details.
+
+((c8.9.5)) TAG SEQUENCING: Tag sets can be sent after a successful
+           logged-in tag is sent and before a logged-out tag is sent.
+           May be arbitrarily intermixed with hear tags, and xresponse
+           tags if they are used.
+
+           ((c8.9.5.1)) There are additional tag sequencing issues
+           specifically involving the sending order of multiple set
+           tags.  Often, actions may occur that affect multiple
+           objects, potentially in multiple matrices, creating
+           potentially many set tags that must be delivered, in
+           various subsets, and in various orders, to various
+           different clients, depending on their exact situations with
+           respect to the actions causing the changes being reported
+           in the set tags.
+
+           ((c8.9.5.2)) There are two primary principles and one
+           secondary principle that jointly go quite far towards
+           determining acceptable sending sequences for multiple set
+           tags generated in response to events occurring on a TileNet
+           server:
+
+           ((c8.9.5.2.1)) FIRST PRIMARY PRINCIPLE: 
+                          The Last Matrix Set Is The Current Matrix
+
+             ((c8.9.5.2.1.1)) A.K.A. "Last Is Current".  This is the
+             first primary principle.  Whenever the client receives a
+             set tag where the set.objid names a matrix, the client
+             MUST record that objid internally as the 'current
+             matrix', and must update the relevant internal data
+             structures to represent the fact that the client's agent
+             is now contained by the now current matrix.
+
+             ((c8.9.5.2.1.2)) In addition, if the (new) current matrix
+             objid differs from the (old) current matrix objid, then
+             the client MUST initiate a display rebuild to reflect the
+             fact that the agent has now 'moved' to the new current
+             matrix.
+
+           ((c8.9.5.2.2)) SECOND PRIMARY PRINCIPLE:
+                          Set Objects Are (Usually) In The Current Matrix
+
+           ((c8.9.5.2.2.2)) A.K.A. "Current Is Container".  This is
+           the second primary principle.  With one exception, whenever
+           the client receives a set tag where the set.objid names a
+           token, an agent, or a key, in addition to whatever other
+           properties the set tag may specify, the client MUST also
+           interpret the set tag as meaning that the object referenced
+           by the set.objid is also contained by the current matrix.
+
+           ((c8.9.5.2.3)) Negative X Means Exit The Current Matrix
+
+           ((c8.9.5.2.3.1)) A.K.A. "X To Exit".  This is part of the
+           secondary principle -- it is the exception mentioned in
+           (c8.8.5.2.2.2).  Whenever a client receives a set tag where
+           the set.objid names a token, an agent, or a key, if the
+           attribute 'x' is supplied AND it contains a negative
+           integer, in addition to whatever other properties the set
+           tag may specify, the client MUST also interpret the set tag
+           as meaning that the object referenced by the set.objid is
+           no longer contained by the current matrix.
+
+           ((c8.9.5.2.3.2)) If the object referenced by the set.objid
+           is the client's agent, that implies that the client agent
+           is currently contained by no matrix at all.  Clients MAY
+           choose to somehow display that fact visually to the human
+           or MAY choose to leave the old current matrix displayed on
+           the screen, at least for a period of time.
+
+           ((c8.9.5.2.3.3)) If server operations are such that the
+           current agent is going to be moved to another matrix as
+           part of a single 'ballistic' series of operations, servers
+           MAY as an enhancement avoid sending the "X To Exit" set to
+           the agent that is moving, since there will be a subsequent
+           set matrix tag sent to that agent later in the ballistic
+           sequence anyway.
+
+           ((c8.9.5.3)) Those three principles -- 'Last Is Current',
+           'Current Is Container', and 'X To Exit' -- when combined
+           significantly constrain the possible sequences for
+           correctly delivering set tags delivered to clients.
+
+           ((c8.9.5.3.1)) For example, suppose agents a5 and a12 were
+           both in matrix m3, along with a token t39.  Then suppose
+           that a5 clicks on t39, and suppose that the behavior of t39
+           is to color everybody in the matrix blue and also send the
+           clicking agent to matrix m1.  This sequence of events could
+           be correctly reported to agent a5 like this:
+
+               <set objid="a12" bgcolor="ff0000ff"/>
+               <set objid="a5" bgcolor="ff0000ff"/>
+               <set objid="m1"/>
+
+           ((c8.9.5.3.1.1)) This same sequence of events might be
+           correctly reported to agent a12 like this:
+
+               <set objid="a12" bgcolor="ff0000ff"/>
+               <set objid="a5" bgcolor="ff0000ff" x="-1"/>
+
+           where the second tag uses the "X To Exit" principle to
+           inform a12 that a5 has left m3.
+
+           ((c8.9.5.3.1.3)) By contrast, sending this sequence of tags
+           to a5:
+
+               <set objid="m1"/>
+               <set objid="a12" bgcolor="ff0000ff"/>
+               <set objid="a5" bgcolor="ff0000ff"/>
+
+           would not be correct, because it would tell a5 that both
+           a12 and a5 were now contained by m1.
+
+           ((c8.9.5.3.1.3)) Similarly, sending this sequence of tags
+           to a5 would also be wrong:
+
+               <set objid="a12" bgcolor="ff0000ff"/>
+               <set objid="m1"/>
+               <set objid="a5" bgcolor="ff0000ff" x="-1"/>
+
+           because it would leave a5 'officially uncontained' as the
+           end of the sequence, rather than contained by m1 as
+           intended.
+
+           ((c8.9.5.3.1.4)) Finally, sending a sequence like this to
+           a5:
+
+               <set objid="a12" bgcolor="ff0000ff"/>
+               <set objid="a5" bgcolor="ff0000ff" x="-1"/>
+               <set objid="m1"/>
+
+           would also work correctly, leaving a5 colored blue and
+           contained by m1.
+
+           ((c8.9.5.3.1.5)) Note that in general, as in that example,
+           it is frequently the case that different (sub)sets of tags
+           must be sent to different clients.  Getting the set tag
+           sequencing right -- while hopefully sending a minimum of
+           redundant tag information -- is a significant mark of
+           TileNet quality.
+
+((c8.9.6)) ATTRIBUTE DETAILS
+
+ ((c8.9.6.1)) set.objid : object identifier
+
+  ((c8.9.6.1.1)) PURPOSE: Identify the object affected by this set
+                 tag.  Additionally, if the set.objid refers to a
+                 matrix, also indicate that that matrix is now the
+                 'current matrix' containing the receiving client's
+                 agent.
+
+  ((c8.9.6.1.2)) CLIENT: MUST treat this objid as defining what object
+                 is updated with the other information contained in
+                 the set tag, and MUST store all that information, and
+                 cause whatever part of it is appropriate to be
+                 displayed to the human user.
+
+                 ((c8.9.6.1.2.1)) Note that the set.objid will often
+                 refer to an object that the client has never heard of
+                 before.  When that happens the client MUST create a
+                 new object of the given type, give that new object
+                 the specified objid, and fill in the new object's
+                 attributes using the other information in the set
+                 tag, combined with the current appropriate default
+                 values for attributes that are not mentioned in the
+                 set tag that caused the object to be created.
+
+  ((c8.9.6.1.3)) SERVER: MUST set this objid to specify what object is
+                 being updated with the other information contained in
+                 the set tag, while ordering and delivering set tags
+                 in such a way as to respect the principles (c8.9.5.2)
+                 and constraints documented in this section (c8.9).
+
+ ((c8.9.6.2)) set.energy : integer         [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.9.6.2.1)) PURPOSE: Set the energy level of the target objid.
+
+  ((c8.9.6.2.2)) CLIENT: Most of the details of how a client responds
+                 to and/or display energy level information are vendor
+                 specific, with these exceptions:
+
+                 ((c8.9.6.2.2.1)) If a token's energy level is less
+                 than or equal to zero, the token is considered
+                 'disabled' and the client SHOULD disable the
+                 corresponding graphical item so that it can now
+                 longer be clicked.  A client MUST NOT address tag cmd
+                 type=="click" tags to tokens whose evergy the client
+                 believes to be non-positive.
+
+                 ((c8.9.6.2.2.2)) If a key's energy level is less than
+                 or equal to zero, the key is considered 'disabled'.
+                 A client MUST NOT address tag cmd type=="press" tags
+                 to keys whose energy the client believes to be
+                 non-positive. 
+
+                 ((c8.9.6.2.2.3)) If the client's agent's energy level
+                 is less that or equal to zero, the agent is
+                 considered to be 'in the audience' and 'no longer an
+                 actor'.  A client MUST NOT send any tag cmds with
+                 type=="click" or type=="press" -- addressed to _any_
+                 target -- when the client believes its agent has a
+                 non-positive energy level.
+
+                 ((c8.9.6.2.2.4)) If any agent contained in the
+                 current matrix has a non-positive energy level -- so
+                 that they are (currently anyway) 'audience' -- the
+                 client SHOULD display that fact graphically in some
+                 way.
+
+  ((c8.9.6.2.3)) SERVER: Details of how energy levels of objects are
+                 manipulated are all vendor specific; they most
+                 obviously can model some kind 'health' or 'score',
+                 but are available for whatever purposes vendors can
+                 devise.  The server can make no particular
+                 assumptions about how the client will react to any
+                 particular energy levels except for those exceptions
+                 just mentioned above (c8.9.6.2.2).
+
+
+ ((c8.9.6.3)) set.name : String         [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.9.6.3.1)) PURPOSE: Provide a 'name' for an object, which is
+                 hopefully fairly short and memorable, but there are
+                 no explicit size limits imposed by this
+                 specification, and (unlike objids) there is no
+                 requirement for the uniqueness of object names.  When
+                 applied to different object types, the set.name has
+                 different server behavior and client display
+                 requirements, as discussed below and summarized in
+                 (c5.1).
+
+                 ((c8.9.6.3.1.1)) Agent: A set.name applied to an
+                 agent specifies the informal 'name' of that agent,
+                 which is typically expected to be used in lieu of the
+                 agent's objid in most contexts.
+
+                   ((c8.9.6.3.1.1.1)) Since (at least the initial)
+                   agent name is derived from input supplied by the
+                   user in the login tag (c8.6), clients are typical
+                   the ultimate sources of the data appearing as agent
+                   names.
+
+                   ((c8.9.6.3.1.1.2)) However, this spec does not
+                   prohibit servers from later changing an agent's
+                   name in any way the server wishes.  If the server
+                   does this, however, clients MAY ensure that
+                   supplied agent names are single lines and of
+                   'reasonable' length, where the precise meaning of
+                   'reasonable' in this context is not defined by this
+                   specification.
+
+                 ((c8.9.6.3.1.2)) Token, Matrix: A set.name applied to
+                 a token or matrix specifies the informal 'name' of
+                 that object, which is expected to be displayed on
+                 that object in some appropriate way by the client.
+
+                 ((c8.9.6.3.1.3)) Key: A set.name applied to a key
+                 creates, recreates, or deletes a key binding
+                 (c8.9.6.3.2.2).
+
+  ((c8.9.6.3.2)) CLIENT: Clients have obligations to handle the
+                 set.name attribute as follows:
+
+                 ((c8.9.6.3.2.1)) If an agent: Perhaps modify the name
+                 (c8.9.6.3.1.1.2), and then display it whereever
+                 agents are displayed.
+
+                 ((c8.9.6.3.2.2)) If a key: The name supplied MUST be
+                 the name of a Java 'virtual key' code -- i.e., one of
+                 the constants beginning with 'VK_' in the package
+                 java.awt.event.KeyEvent.  (Note: Code to map from
+                 these VK_ names as Strings to the associated integer
+                 values will be available on request from the
+                 specification author (and the first person to request
+                 that code will get a prize)).  If the name does not
+                 match one of those constant names, the entire set tag
+                 SHOULD be ignored by the client.
+
+                   ((c8.9.6.3.2.2.1)) Otherwise, unless 'X To Exit'
+                   (c8.9.5.2.3.1) is in effect, the client MUST create
+                   or recreate a key binding or key listener or some
+                   such mechanism such that, when the user uses the
+                   key named by the given set.name, a tag cmd
+                   type=="press" will be send to the set.objid of this
+                   set tag.
+
+                   ((c8.9.6.3.2.2.1.1)) If 'X to Exit' is in effect,
+                   meaning that the set.x attribute contains a value
+                   equal to -1, then instead of (re)creating a key
+                   binding, any existing key binding for the named key
+                   is removed.
+
+                   ((c8.9.6.3.2.2.1.2)) Note that tag cmd
+                   type=="press" is in fact poorly-named, because the
+                   client MUST deliver ALL key events associated with
+                   the given key code, whether they are key presses or
+                   key releases, and whether or not any modifier keys
+                   are pressed at the same time.  The client MUST
+                   report the state of all those affairs by using the
+                   tag cmd.modifiers attribute, however, and the
+                   server can then do whatever it wishes with them.
+
+                 ((c8.9.6.3.2.3)) If a matrix: The name MUST be
+                 associated with the (new) current matrix and SHOULD
+                 be displayed to the human user in some appropriate
+                 way. 
+
+                 ((c8.9.6.3.2.4)) If a token: The name MUST be
+                 associated with that token and SHOULD be displayed to
+                 the human user in some appropriate way. 
+
+  ((c8.9.6.3.3)) SERVER: Servers MAY take efforts to ensure the
+                 uniqueness of names, or the uniqueness of names
+                 within a given object type, but are under no
+                 obligation to do so.  Servers, like clients, MAY
+                 choose to limit name lengths or character sets, but
+                 once again they are under no obligation to do so.
+
+ ((c8.9.6.4)) set.text : String         [ OPTIONAL ATTRIBUTE ]
+
+  ((c8.9.6.4.1)) PURPOSE: Provide a brief description of an object,
+                 providing more and perhaps useful information about
+                 the object.
+
+  ((c8.9.6.4.2)) CLIENT: Clients have obligations to handle the
+                 set.text attribute as follows:
+
+                 ((c8.9.6.4.2.1)) If set.text on an agent or a token:
+                 Clients SHOULD place the set.text in a tooltip
+                 associated with the given agent or token.
+
+                 ((c8.9.6.4.2.2)) If set.text on a matrix: Clients may
+                 display the information anyway they choose, but it
+                 SHOULD be readily available if not continuously
+                 displayed
+
+                 ((c8.9.6.4.2.3)) If set.text on a key: Clients SHOULD
+                 somehow display the information associated with the
+                 given key, as a tooltip or a line of text or
+                 something.
+
+                 ((c8.9.6.4.2.4)) If set.text on an image: If images
+                 are unsupported on the client the set tag MUST be
+                 ignored.  Otherwise the set.text must contain an even
+                 length sequence of hexadecimal characters or else the
+                 tag is illegal.
+
+                 ((c8.9.6.4.2.4.1)) If it does contain an even number
+                 of hex digits, the
+                 client MUST convert that length L hexadecimal string
+                 into an length L/2 array of bytes, and then attempt
+                 to read that byte array as image data.  If that image
+                 read fails, or it succeeds but the image is
+                 considered 'too large' according to vendor-specific
+                 standards, the client must IGNORE the set.image tag.
+                 If the image read succeeds, the resulting image
+                 SHOULD be associated with the given objid name, and
+                 SHOULD be displayed whereever possible on (other)
+                 objects that subsequently specify this image objid in
+                 their 'image' attributes.
+
+                 ((c8.9.6.4.2.4.2)) Note: If the content of an image
+                 is defined or changed _after_ other objects reference
+                 the image objd in their image attributes, clients MAY
+                 or MAY NOT apply the new or changed image to existing
+                 image references, as the client chooses.
+
+  ((c8.9.6.4.3)) SERVER: When using a set.text on an agent, the server
+                 SHOULD provide the agent's client's IP address in the
+                 supplied text.  
+
+                 ((c8.9.6.4.4)) 
+                 The server MUST NOT set.text anything on an image
+                 except the hexadecimal value of the byte array
+                 containing the entire image data.  Server SHOULD
+                 avoid creating extremely large images, for a
+                 vendor-specific notion of appropriate image sizes.
+
+                 ((c8.9.6.4.4.1)) Also, when using a set.text on an
+                 image objid, server MUST NOT assume that such
+                 newly-defined or newly-changed images will
+                 'propagate' to existing image uses (on other
+                 non-image objects) in the client.  Server SHOULD
+                 endeavor to define images before they are referenced
+                 in set.image tags, and when that is impossible,
+                 server MUST re-set.image all objects referring to a
+                 given image after that image has been created or
+                 altered, if server needs to be sure what is being
+                 displayed.
+
+ ((c8.9.6.5)) set.bgcolor : hexadecimal 32-bit RGBA value [OPTIONAL ATTRIBUTE]
+              set.fgcolor : hexadecimal 32-bit RGBA value [OPTIONAL ATTRIBUTE]
+
+  ((c8.9.6.5.1)) PURPOSE: Specify background (bg) and foreground (fg)
+                 colors for a Ma3er object, with specified
+                 transparencies.
+
+  ((c8.9.6.5.2)) CLIENT: In general, clients MUST ensure that the
+                 attribute values correspond to 32 bit hexadecimal
+                 values (with leading 0's either included or omitted),
+                 and if they do not, the set tag is illegal.  (The
+                 client may or may not accept leading or trailing
+                 whitespace, as it chooses).
+
+                 ((c8.9.6.5.2.1)) Clients MUST create and use colors
+                 that are capable of transparency (e.g., the kind of
+                 Color objects returned by the
+
+                 java.awt.Color(int rgba,boolean haslpha)
+
+                 constructor when passing true for hasalpha.  
+
+                 ((c8.9.6.5.2.2)) Whenever color operations are
+                 defined by this specification (i.e., for everything
+                 except keys and images) the client MUST set the
+                 specified color as the respective back/foreground of
+                 the visual representation of the given object, _even_
+                 if the colors are poorly chosen, both the same, fully
+                 transparent, or anything else the client designed may
+                 believe to be objectionable in principle.  Colors
+                 MUST NOT be 'tweaked' or 'improved' or otherwise
+                 altered by the client.
+
+                 ((c8.9.6.5.2.3)) WARNING: A 32 bit RGBA value
+                 corresponds most naturally to an 'unsigned int', in C
+                 or C++ terms, but Java lacks the concept of unsigned
+                 integers.  Client vendors MUST find a way to accept
+                 values of up to 8 hexadeicmal digits (corresponding
+                 to a 32 bit int), even if the resulting numbers have
+                 the leftmost bit position set to a 1.
+
+                 ((c8.9.6.5.2.4)) When a b/fgcolor is set on a matrix
+                 the client MUST set the specified color as the
+                 respective back/foreground color of the visual
+                 representation of the matrix, but in addition MUST
+                 save the back- and/or foreground colors for later
+                 use.  Specifically, if a new token is created in this
+                 current matrix, then the b/fgcolors set on the matrix
+                 will be used as the corresponding default values for
+                 the token, if the set that creates the token fails to
+                 specify either or both colors explicitly.
+
+  ((c8.9.6.5.3)) SERVER: Whenever colors are specified (other than in
+                 the image format-specific hexdata) the
+                 server MUST send suitably constructed RGBA color
+                 values expressed in hexadecimal, with the alpha
+                 component alpha also specified to determine the
+                 degree of transparency the server desires for the
+                 given color.
+
+ ((c8.9.6.6)) set.x : integer       [OPTIONAL ATTRIBUTE]
+              set.y : integer       [OPTIONAL ATTRIBUTE]
+
+  ((c8.9.6.6.1)) PURPOSE: Specify positions and sizes for components
+                 that need them.  Also provide a space for the 'X<0
+                 Means Exit' flag (c8.9.5.2.3) used to indicate when
+                 objects (other than the client's agent, generally)
+                 have left the current matrix.
+
+  ((c8.9.6.6.2)) CLIENT: The client obligations when a set.x or set.y
+                 attribute is specified depend on the type of object
+                 being set.  In all cases, however, a set that
+                 specifies a y attribute value less than 0 is illegal.
+
+                 ((c8.9.6.6.2.1)) For the required special handling
+                 when the x attribute value is specified as less than
+                 zero, see the 'X TO EXIT' principle (c8.9.5.2.3).
+                 The rest of the present discussion (c8.9.6.6) assumes
+                 that x, if specified, is greater than or equal to
+                 zero.
+
+                 ((c8.9.6.6.2.2)) If a set.x or set.y value is applied
+                 to a matrix, first the values are checked.  If any
+                 supplied x or y value is less than or equal to 1, the
+                 set tag is illegal.  Otherwise, the x and/or y values
+                 correspond to now-desired sizes of the current
+                 matrix.  In this case, even if only one is applied,
+                 and even if the value(s) supplied exactly equal the
+                 matrix dimension(s) already in use, the client MUST
+                 perform a 'MATRIX RESIZE' operation. which is
+                 implemented by the following algorithm or by any
+                 other method having the same effect:
+
+                   ((c8.9.6.6.2.2.1)) First, all agents, all tokens,
+                   and all keys are ejected from the matrix, meaning
+                   that each becomes 'uncontained' as if an 'X TO
+                   EXIT' set was performed on each of them, in some
+                   unspecified order.
+
+                   ((c8.9.6.6.2.2.2)) Then the matrix grid is resized
+                   as needed to match newly-specified dimension(s),
+                   defaulting to the old x or y dimension if it is
+                   unspecified. 
+
+                 ((c8.9.6.6.2.2.3)) Note that at the conclusion of a
+                 MATRIX RESIZE procedure, the current matrix MUST be
+                 empty and the client's agent MUST be uncontained.
+
+                 ((c8.9.6.6.2.2.4)) Note also that the name, text,
+                 bgcolor, fgcolor, and image of the
+                 resized matrix remain unchanged.
+
+                 ((c8.9.6.6.2.3)) If a set.x or set.y value is applied
+                 to a token, the client MUST interpret the x and/or y
+                 values as the desired new column and/or row of the
+                 given token.  If only one dimension is supplied, the
+                 current value of the other diemsnion is used to
+                 produce a particular grid cell location.
+
+                 ((c8.9.6.6.2.3.1)) If the desired cell location is
+                 not contained in the current size of the current
+                 matrix, the set tag is illegal.
+
+                 ((c8.9.6.6.2.3.2)) 'Taking Pieces' -- If the desired
+                 cell location is already occupied by a token, then
+                 that token becomes uncontained as if by an 'X TO
+                 EXIT' move, thus freeing up that grid cell, and then
+                 the token specified in the set.objid is moved to the
+                 desired cell location.
+
+                 ((c8.9.6.6.2.4)) Applying an
+                 x and/or y value to an image MAY be used to provide
+                 guidance from the server about the desired display
+                 size of the image.
+
+                 ((c8.9.6.6.2.5)) Applying a y value and/or
+                 anon-negative x value to an agent or a key is
+                 undefined by this specification.
+
+  ((c8.9.6.6.3)) SERVER: The server must provide or omit x and/or y
+                 attribute values in line with the required client
+                 behavior (c8.9.6.6.2) and the server's wishes.
+
+ ((c8.9.6.7)) set.image : object identifier or ""    [OPTIONAL ATTRIBUTE]
+
+  ((c8.9.6.7.1)) PURPOSE: To specify or
+                 remove an image to be used if possible in the visual
+                 representation of this object.  In all cases, if the
+                 supplied attribute value is the empty string, the
+                 effect is to clear the image attribute on the
+                 set.objid targeted object.
+
+  ((c8.9.6.7.2)) CLIENT: The client obligations when a set.image value
+                 is applied depend on both the type of the object, and
+                 on whether the named image had previously been
+                 defined or not.
+
+                 ((c8.9.6.7.2.1)) If the named image had not
+                 previously been defined, clients MAY instead set the
+                 image attribute to be empty (corresponding to no
+                 image), or MAY create or reuse some 'placeholder'
+                 image data, or MAY leave the image attribute value
+                 unchanged.
+
+                 ((c8.9.6.7.2.2)) If the set.objid is of type agent or
+                 token, and the client supports images, and the
+                 specified image is defined, the client MUST employ
+                 the specified image as an 'icon' on the visual
+                 representation of the agent or token.
+
+                 ((c8.9.6.7.2.3)) If the set.objid is of type matrix,
+                 and the client supports images, and the specified
+                 image is defined, the client SHOULD employ the image
+                 as a background image on the matrix.
+
+                 ((c8.9.6.7.2.4)) If the set.objid is of any other
+                 type, the result is vendor specific.
+
+======
+((c8.10)) TAG: xrequest
+((c8.10.1)) FROM: Client
+((c8.10.2)) DTD CONTEXT: <!ELEMENT client (login+, (cmd | xrequest)*, logout)>
+((c8.10.3)) ATTRIBUTE SUMMARY:
+  Required: --none--
+  Optional: 
+    options : String
+
+  NOTE: tag xrequest also accepts arbitrary 'parsed character data'
+  (#PCDATA in XML terms), between the <xrequest> and the </xrequest>
+  tags. 
+
+
+((c8.10.4)) TAG PURPOSE: Provide an explicit vendor-specific 'rathole'
+           for client-server communication between clients and servers
+           typically from a single vendor.  Also, to provide an
+           opportunity for vendors to experiment with the pros and
+           cons of attempts at 'vendor lock-in'.  Also, to ensure that
+           all clients and servers are required to deal with the
+           nearly arbitrary garbage that can appear in #PCDATA.
+
+
+((c8.10.5)) TAG SEQUENCING: Can appear whereever a cmd tag can appear.
+
+
+((c8.10.6)) ATTRIBUTE DETAILS
+
+ ((c8.10.6.1)) xrequest.options : String
+
+  ((c8.10.6.1.1)) PURPOSE: Vendor-specific.
+
+  ((c8.10.6.1.2)) CLIENT: MAY send this tag for vendor-specific
+                 reasons.  
+
+  ((c8.10.6.1.3)) SERVER: MAY process this tag in a vendor-specific
+                  way.  MUST be able to read the tag successfully in
+                  any case, regardless of what attribute options
+                  and/or the #PCDATA may contain, so long as it is all
+                  legal XML by the TileNet1.0.dtd.
+
+
+======
+((c8.11)) TAG: xresponse
+((c8.11.1)) FROM: Server
+((c8.11.2)) DTD CONTEXT: <!ELEMENT server (logged-in+, (set | hear | xresponse)*, logged-out)?>
+((c8.11.3)) ATTRIBUTE SUMMARY:
+  Required: --none--
+  Optional: 
+    options : String
+
+  NOTE: tag xresponse also accepts arbitrary 'parsed character data'
+  (#PCDATA in XML terms), between the <xresponse> and the </xresponse>
+  tags. 
+
+
+((c8.11.4)) TAG PURPOSE: Provide an explicit vendor-specific 'rathole'
+           for client-server communication between clients and servers
+           typically from a single vendor.  Also, to provide an
+           opportunity for vendors to experiment with the pros and
+           cons of attempts at 'vendor lock-in'.  Also, to ensure that
+           all clients and servers are required to deal with the
+           nearly arbitrary garbage that can appear in #PCDATA.
+
+
+((c8.11.5)) TAG SEQUENCING: Can appear whereever a set or hear tag can
+appear.
+
+
+((c8.11.6)) ATTRIBUTE DETAILS
+
+ ((c8.11.6.1)) xresponse.options : String
+
+  ((c8.11.6.1.1)) PURPOSE: Vendor-specific.
+
+  ((c8.11.6.1.2)) CLIENT: MAY process this tag in a vendor-specific
+                  way.  MUST be able to read the tag successfully in
+                  any case, regardless of what attribute options
+                  and/or the #PCDATA may contain, so long as it is all
+                  legal XML by the TileNet1.0.dtd.
+
+  ((c8.11.6.1.3)) SERVER: MAY send this tag for vendor-specific
+                  reasons.  Note that despite the tag name, there is
+                  no particular specification-required initiative with
+                  this tag: A server MAY choose to send an xresponse
+                  tag without first having received an xrequest tag,
+                  or at any other time that it is legal by the DTD.
+
+------
+((c9)) Document history
+
+((c9.1)) Document version 1.0: First released version.
+
